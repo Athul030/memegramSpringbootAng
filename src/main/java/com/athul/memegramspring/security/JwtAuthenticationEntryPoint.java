@@ -16,8 +16,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        System.out.println(response.getStatus());
         if(response.getStatus()==403)   {
             response.sendError(HttpServletResponse.SC_FORBIDDEN,"Access Forbidden");
+        }else if(response.getStatus()==415){
+            response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,"Access Forbidden");
         }else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
         }

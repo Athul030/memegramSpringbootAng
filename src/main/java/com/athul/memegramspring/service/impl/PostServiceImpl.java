@@ -2,6 +2,7 @@ package com.athul.memegramspring.service.impl;
 
 import com.athul.memegramspring.dto.CategoryDTO;
 import com.athul.memegramspring.dto.PostDTO;
+import com.athul.memegramspring.dto.RoleDto;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.Category;
 import com.athul.memegramspring.entity.Post;
@@ -14,10 +15,12 @@ import com.athul.memegramspring.repository.UserRepo;
 import com.athul.memegramspring.service.PostService;
 import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepo userRepo;
     private final UserService userService;
     private final CategoryRepo categoryRepo;
+    private final ModelMapper modelMapper;
 
 
 
@@ -56,6 +60,7 @@ public class PostServiceImpl implements PostService {
         returnedPostDto.setImageName(savedPost.getImageName());
         returnedPostDto.setAddedDate(savedPost.getAddedDate());
         returnedPostDto.setUser(userToDTO(savedPost.getUser()));
+
         returnedPostDto.setCategory(catToDTO(savedPost.getCategory()));
         return returnedPostDto;
     }
@@ -135,6 +140,8 @@ public class PostServiceImpl implements PostService {
         userDTO.setEmail(user.getEmail());
         userDTO.setBio(user.getBio());
         userDTO.setPassword(user.getPassword());
+        Set<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toSet());
+        userDTO.setRoles(roleDtos);
         return userDTO;
 
     }

@@ -30,6 +30,7 @@ public class SecurityConfig  {
     private  final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private  final JWTAuthenticationFilter jwtAuthenticationFilter;
     private  final UserDetailsService userDetailsService;
+    private final CustomCors customCors;
 //    private final CustomAccessDeniedHandlerImpl customAccessDeniedHandler;
 
 
@@ -44,9 +45,11 @@ public class SecurityConfig  {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(corsCustomizer->corsCustomizer.configurationSource(customCors))
                 .authorizeHttpRequests( authorize->authorize
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/user/test").permitAll()
                         .anyRequest().authenticated())
                         .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 //                                .accessDeniedHandler(customAccessDeniedHandler)
@@ -66,6 +69,7 @@ public class SecurityConfig  {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
+
 
 
 

@@ -2,9 +2,11 @@ package com.athul.memegramspring.controller;
 
 import com.athul.memegramspring.dto.PostDTO;
 import com.athul.memegramspring.entity.Post;
-import com.athul.memegramspring.exceptions.ApiResponse;
+import com.athul.memegramspring.exceptions.ApiResponseCustom;
 import com.athul.memegramspring.service.FileService;
 import com.athul.memegramspring.service.PostService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class PostController {
 
     private final PostService postService;
@@ -34,16 +37,31 @@ public class PostController {
 
     //create a post
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO,
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "Category/User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<PostDTO> createPost(@RequestPart PostDTO postDTO,
                                                 @PathVariable Integer userId,
-                                              @PathVariable Integer categoryId){
-
+                                                @PathVariable Integer categoryId,
+                                                @RequestPart("file")MultipartFile file) throws IOException {
+        //image
+        String fileName = fileService.uploadImage(path, file);
+        postDTO.setImageName(fileName);
         PostDTO createdPost = postService.createPost(postDTO,userId,categoryId);
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
 
     //get by user
     @GetMapping("/user/{userId}/posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Integer userId){
 
         List<PostDTO> postsByUser = postService.getPostsByUser(userId);
@@ -53,6 +71,12 @@ public class PostController {
 
     //get by category
     @GetMapping("/category/{categoryId}/posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "Category not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public ResponseEntity<List<PostDTO>> getPostsByCategory(@PathVariable Integer categoryId){
 
         List<PostDTO> postsByCategory = postService.getPostsByCategory(categoryId);
@@ -62,6 +86,11 @@ public class PostController {
 
     //get all posts
     @GetMapping("/posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public ResponseEntity<List<PostDTO>> getAllPost(){
         List<PostDTO> allPost = postService.getAllPost();
         return new ResponseEntity<List<PostDTO>>(allPost,HttpStatus.OK);
@@ -69,6 +98,12 @@ public class PostController {
 
     //get post details by id
     @GetMapping("/posts/{postId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public ResponseEntity<PostDTO> getPostById(@PathVariable Integer postId){
         PostDTO postDTO = postService.getPostById(postId);
         return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
@@ -76,14 +111,26 @@ public class PostController {
 
     //delete post
     @DeleteMapping("/posts/{postId}")
-    public ApiResponse deletePost(@PathVariable  Integer postId){
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ApiResponseCustom deletePost(@PathVariable  Integer postId){
 
         postService.deletePost(postId);
-        return new ApiResponse("Post is successfully deleted",true);
+        return new ApiResponseCustom("Post is successfully deleted",true);
 
     }
 
     @PutMapping("/posts/{postId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     public ResponseEntity<PostDTO> updatePost (@RequestBody PostDTO postDTO,
                                                @PathVariable Integer postId){
         PostDTO updatedPost = postService.updatePost(postDTO, postId);
@@ -102,6 +149,18 @@ public class PostController {
         return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
 
     }
+
+//    //post multiple image upload
+//    @PostMapping("/post/image/upload/{postId}")
+//    public ResponseEntity<PostDTO> uploadPostImageMultiple(@RequestParam("image")MultipartFile[] file,
+//                                                   @PathVariable Integer postId) throws IOException {
+//        String[] fileName = fileService.uploadMultipleImage(path, file);
+//        PostDTO postDto = postService.getPostById(postId);
+//        postDto.setImageName(fileName);
+//        PostDTO postDTO = postService.updatePost(postDto, postId);
+//        return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
+//
+//    }
 
     @GetMapping(value="/post/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
     public void downloadImage(@PathVariable("imageName") String imageName, HttpServletResponse response) throws IOException {

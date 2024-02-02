@@ -95,6 +95,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getUserByUsername(String username) {
+        User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username));
+
+        return userToDTO(foundedUser);
+    }
+
+    @Override
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepo.findAll();
         List<UserDTO> userDTOs = users.stream().map(user -> userToDTO(user))

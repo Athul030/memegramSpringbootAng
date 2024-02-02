@@ -15,17 +15,17 @@ public class UserDTO {
 
     private int id;
 
-    @NotEmpty
+    @NotBlank
     private String fullName;
-    @NotEmpty
+    @NotBlank
     @Size(min=4, message = "Username must be minimum of 4 chars")
     private String userHandle;
     @Email(message = "Email address is not valid")
     private String email;
-    @NotEmpty
+    @NotBlank
     @Size(min=3, message = "Password must be minimum of 3 chars")
     private String password;
-    @NotEmpty
+    @NotBlank
     @Size(min=4, message = "Username must be minimum of 5 chars")
     private String bio;
 

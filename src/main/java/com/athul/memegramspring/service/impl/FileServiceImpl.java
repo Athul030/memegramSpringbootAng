@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -27,11 +28,32 @@ public class FileServiceImpl implements FileService {
         if(!f.exists()){
             f.mkdir();
         }
-
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return  fileName;
-
     }
+
+    @Override
+    public String[] uploadMultipleImage(String path, MultipartFile[] file) throws IOException {
+        String[] fileArray=new String[file.length];
+        for(int i=0;i<file.length;i++){
+
+            MultipartFile file1=file[i];
+            String name=file1.getOriginalFilename();
+            String randomId=UUID.randomUUID().toString();
+            String fileName=randomId.concat(name.substring(name.lastIndexOf(".")));
+            String filePath = path+File.separator+fileName;
+
+            File f=new File(path);
+            if(!f.exists()){
+                f.mkdir();
+            }
+            Files.copy(file[i].getInputStream(),Paths.get(filePath));
+            fileArray[i]=fileName;
+        }
+        return fileArray;
+    }
+
+
 
     @Override
     public InputStream getResource(String path, String fileName) throws FileNotFoundException {

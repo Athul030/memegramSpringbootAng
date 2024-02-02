@@ -1,6 +1,7 @@
 package com.athul.memegramspring.exceptions;
 
 import jakarta.persistence.Entity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -17,10 +19,10 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
+    public ResponseEntity<ApiResponseCustom> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
         String message = ex.getMessage();
-        ApiResponse apiResponse = new ApiResponse(message,false);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
+        ApiResponseCustom apiResponse = new ApiResponseCustom(message,false);
+        return new ResponseEntity<ApiResponseCustom>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -42,10 +44,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiResponse> handleApiException(ApiException ex){
+    public ResponseEntity<ApiResponseCustom> handleApiException(ApiException ex){
         String message = ex.getMessage();
-        ApiResponse apiResponse = new ApiResponse(message,false);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST);
+        ApiResponseCustom apiResponse = new ApiResponseCustom(message,false);
+        return new ResponseEntity<ApiResponseCustom>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+        return ResponseEntity.badRequest().body("Email already exists");
     }
 }
 
