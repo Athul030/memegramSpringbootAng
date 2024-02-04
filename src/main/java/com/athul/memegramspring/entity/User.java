@@ -1,5 +1,6 @@
 package com.athul.memegramspring.entity;
 
+import com.athul.memegramspring.enums.Provider;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,9 @@ public class User implements UserDetails {
     private String password;
 
     private String bio;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Post> post = new ArrayList<>();

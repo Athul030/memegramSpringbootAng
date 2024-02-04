@@ -1,2 +1,6 @@
-package com.athul.memegramspring.enums;public enum Provider {
+package com.athul.memegramspring.enums;
+
+public enum Provider {
+
+    LOCAL,GOOGLE
 }
