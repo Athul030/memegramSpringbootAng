@@ -1,91 +1,97 @@
-//package com.athul.memegramspring.controller;
-//
-//import com.athul.memegramspring.dto.AdminDTO;
-//import com.athul.memegramspring.dto.LoginDTO;
-//import com.athul.memegramspring.entity.Admin;
-//import com.athul.memegramspring.service.AdminService;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.HttpServletResponse;
-//import jakarta.validation.Valid;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.HttpStatusCode;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.context.SecurityContextHolder;
-//import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-//import org.springframework.validation.BindingResult;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.security.Principal;
-//
-//
-//@RestController
-//@RequestMapping("/admin")
-//public class AdminController {
-//
-//    private AdminService adminService;
-//
-//    public AdminController(AdminService adminService) {
-//        this.adminService = adminService;
-//    }
-//
-//    SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-//
-////    @GetMapping("/login?logout")
-////    public String performLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
-////        // .. perform logout
-////        this.logoutHandler.logout(request,response,authentication);
-////        return "LOG OUT";
-////    }
-//
-//    @PostMapping("/logout")
-//    public String Logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
-//        Authentication authentication2 = SecurityContextHolder.getContext().getAuthentication();
-//        System.out.println("1"+authentication);
-//        System.out.println("2"+authentication2);
-//        // .. perform logout
-//        this.logoutHandler.logout(request,response,authentication2);
-//        System.out.println("1"+authentication);
-//        System.out.println("2"+authentication2);
-//        return "LOG OUT2";
-//    }
-//
-//    @PostMapping("/register")
-//    public ResponseEntity<String> register(@Valid @RequestBody AdminDTO adminDTO, BindingResult result){
-//
-//        if(result.hasErrors()){
-//            //send back the entered info
-//            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
-//        }
-//        return (adminService.register(adminDTO));
-//
-//
-//    }
-//
-////    @PostMapping("/login")
-////    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO loginDTO){
-////        return (adminService.login(loginDTO));
-////    }
-//
-//    @GetMapping("/check")
-//    public String check( Principal principal){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        System.out.println(authentication);
-//        if (authentication != null && authentication.isAuthenticated() ) {
-//            // User is authenticated
-//            return "User is  logged in";
-//        } else {
-//            // User is not authenticated
-//            return "User is not logged in";
-//        }
-//
-//
-//    }
-//
-////    @PostMapping("/logout")
-////    public ResponseEntity<String> logout(){
-////        return (adminService.logout());
-////    }
-//
-//
-//}
+package com.athul.memegramspring.controller;
+
+import com.athul.memegramspring.dto.UserDTO;
+import com.athul.memegramspring.exceptions.ApiResponseCustom;
+import com.athul.memegramspring.service.UserService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin")
+@CrossOrigin("*")
+public class AdminController {
+
+    private AdminService adminService;
+
+    public UserController(AdminService adminService) {
+
+        this.adminService = adminService;
+    }
+
+    @PostMapping("/register")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<UserDTO> createUser( @Valid  @RequestBody UserDTO userDTO){
+        UserDTO createUserDTO=userService.createUser(userDTO);
+        return new ResponseEntity<>(createUserDTO, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/{userId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO,
+                                              @PathVariable Integer userId){
+        UserDTO updatedUser = userService.updateUser(userDTO,userId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
+
+    //ADMIN
+    //DELETE USER
+
+    @DeleteMapping("/delete/{userId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<ApiResponseCustom> deleteUser(@PathVariable Integer userId){
+        userService.deleteUser(userId);
+        return new ResponseEntity<ApiResponseCustom>(new ApiResponseCustom("User deleted successfully",true), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAll")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        List<UserDTO> listOfUsers =userService.getAllUsers();
+        return new ResponseEntity<>(listOfUsers,HttpStatus.OK);
+    }
+    //    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{userId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<UserDTO> getSingleUser(@PathVariable Integer userId){
+        UserDTO userDTO =userService.getUserById(userId);
+        return new ResponseEntity<>(userDTO,HttpStatus.OK);
+    }
+
+    //test method
+    @GetMapping("/test")
+    public ResponseEntity<?> tester(){
+        System.out.println("connection success");
+        return new ResponseEntity<>("hi",HttpStatus.OK);
+    }
+}

@@ -31,14 +31,23 @@ public class OAuthController {
     public void handleCallBack(HttpServletRequest request) throws IOException {
         authorizationCode = request.getParameter("code");
 
-        String requestBody = "code=" + authorizationCode +
-                "&client_id=" + clientId +
-                "&client_secret=" + clientSecret +
-                "&redirect_uri=" + redirectUri +
-                "&grant_type="+"authorization_code"+
-                "&access_type="+"offline"+
-                "&prompt="+"consent"+
-                "&approval_prompt="+"force";
+        StringBuffer requestBodyBuffer = new StringBuffer();
+        requestBodyBuffer.append("code").append(authorizationCode).append("&client_id=").append(clientId)
+                .append("&client_secret=").append(clientSecret).append( "&redirect_uri=").append(redirectUri)
+                .append( "&grant_type="+"authorization_code")
+                .append("&access_type="+"offline")
+                .append("&prompt="+"consent")
+                .append("&approval_prompt="+"force");
+        String requestBody = requestBodyBuffer.toString();
+
+//        String requestBody1 = "code=" + authorizationCode +
+//                "&client_id=" + clientId +
+//                "&client_secret=" + clientSecret +
+//                "&redirect_uri=" + redirectUri +
+//                "&grant_type="+"authorization_code"+
+//                "&access_type="+"offline"+
+//                "&prompt="+"consent"+
+//                "&approval_prompt="+"force";
 
         HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -49,6 +58,7 @@ public class OAuthController {
         if(responseEntity.getStatusCode() == HttpStatus.OK){
             String accessTokenResponse = responseEntity.getBody();
             System.out.println("Access toke is"+ accessTokenResponse);
+            System.out.println("12");
         }else{System.out.println("Failed to obtain access token. Status:"+responseEntity.getStatusCode());}
     }
 }
