@@ -15,9 +15,13 @@ public interface UserService {
 
     UserDTO getUserById(Integer userId);
 
+    boolean checkUser(String username);
+
     UserDTO getUserByUsername(String username);
 
     List<UserDTO> getAllUsers();
 
     void deleteUser(Integer userId);
+
+    UserDTO saveUserDTOFromOAuth(String username);
 }

@@ -1,5 +1,6 @@
 package com.athul.memegramspring.dto;
 
+import com.athul.memegramspring.enums.Provider;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ public class UserDTO {
     @NotBlank
     @Size(min=4, message = "Username must be minimum of 5 chars")
     private String bio;
+
+    private Provider provider;
 
     private Set<RoleDto> roles = new HashSet<>();
 }

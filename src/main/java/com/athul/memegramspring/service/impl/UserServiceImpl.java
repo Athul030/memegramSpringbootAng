@@ -4,6 +4,7 @@ import com.athul.memegramspring.dto.RoleDto;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.Role;
 import com.athul.memegramspring.entity.User;
+import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.RoleRepo;
 import com.athul.memegramspring.repository.UserRepo;
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setProvider(Provider.LOCAL);
         //2 is ROLE_USER
         Role role = roleRepo.findById(2).get();
         user.getRoles().add(role);
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
         user.setPassword(userDto.getPassword());
+        user.setProvider(Provider.LOCAL);
         User savedUser = userRepo.save(user);
         return userToDTO(savedUser);
     }
@@ -69,6 +72,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setBio(userDTO.getBio());
+        user.setProvider(userDTO.getProvider());
         User updatedUser = userRepo.save(user);
         return userToDTO(updatedUser);
     }
@@ -95,6 +99,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkUser(String username) {
+        Optional<User> userOptional = userRepo.findByEmail(username);
+        return userOptional.isPresent();
+    }
+
+    @Override
     public UserDTO getUserByUsername(String username) {
         User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username));
 
@@ -115,6 +125,25 @@ public class UserServiceImpl implements UserService {
                 ()->new ResourceNotFoundException("User","Id",userId));
         userRepo.delete(user);
 
+    }
+
+    @Override
+    public UserDTO saveUserDTOFromOAuth(String username) {
+        User user =new User();
+        user.setEmail(username);
+
+        int atIndex = username.indexOf('@');
+        String userHandle = username.substring(0, atIndex);
+        user.setUserHandle(userHandle);
+        user.setFullName(userHandle);
+        user.setProvider(Provider.GOOGLE);
+
+        //2 is ROLE_USER
+        Role role = roleRepo.findById(2).get();
+        user.getRoles().add(role);
+
+        User savedOAuthUser = userRepo.save(user);
+        return userToDTO(savedOAuthUser);
     }
 
     public User dtoToUser(UserDTO userDTO){
@@ -138,6 +167,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setPassword(user.getPassword());
         Set<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toSet());
         userDTO.setRoles(roleDtos);
+        userDTO.setProvider(user.getProvider());
         return userDTO;
 
     }

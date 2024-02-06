@@ -1,5 +1,9 @@
 package com.athul.memegramspring.config;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.athul.memegramspring.security.JWTAuthenticationFilter;
 import com.athul.memegramspring.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,16 @@ public class SecurityConfig  {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String secretAuth;
 
+    @Value("${aws.access-key}")
+    private String awsAccessKey;
+    @Value("${aws.access-secret-key}")
+    private String awsAccessSecretKey;
+    @Value("${aws.region}")
+    private String awsRegion;
+
+
+
+
 
     private  final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private  final JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -63,7 +77,8 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsCustomizer->corsCustomizer.configurationSource(customCors))
                 .authorizeHttpRequests( authorize->authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/refreshToken/**").permitAll()
+                        .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/test").permitAll()
@@ -110,6 +125,18 @@ public class SecurityConfig  {
         DefaultOAuth2AuthorizedClientManager auth2AuthorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository,oAuth2AuthorizedClientRepository);
         auth2AuthorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
         return auth2AuthorizedClientManager;
+    }
+
+
+    public AWSStaticCredentialsProvider getAwsCredentialsProvider(){
+        BasicAWSCredentials awsCred = new BasicAWSCredentials(awsAccessKey,awsAccessSecretKey);
+        return new AWSStaticCredentialsProvider(awsCred);
+    }
+
+    @Bean
+    public AmazonS3 getAmazonS3Client(){
+        return AmazonS3ClientBuilder.standard().withRegion(awsRegion)
+                .withCredentials(getAwsCredentialsProvider()).build();
     }
 
 
