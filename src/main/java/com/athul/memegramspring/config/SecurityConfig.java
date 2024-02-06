@@ -79,7 +79,7 @@ public class SecurityConfig  {
                 .authorizeHttpRequests( authorize->authorize
                         .requestMatchers("/api/v1/auth/**", "/api/v1/refreshToken/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
-                        .requestMatchers("/oauth/**","/login/oauth2/code/google").permitAll()
+                        .requestMatchers("/callback","/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/test").permitAll()
                         .anyRequest().authenticated())

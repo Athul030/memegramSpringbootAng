@@ -79,6 +79,7 @@ public class OAuthController {
             String accessTokenResponse = responseEntity.getBody();
             System.out.println("Access token is"+ accessTokenResponse);
             String username = getEmailAddressFromTokenResponse(accessTokenResponse);
+            //split
             UserDTO userDTO = null;
             if(userService.checkUser(username)){
                 userDTO= userService.getUserByUsername(username);
@@ -87,15 +88,19 @@ public class OAuthController {
             }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
             String token = jwtHelper.generateToken(userDetails);
             JwtAuthResponse response = new JwtAuthResponse();
             response.setAccessToken(token);
             response.setUser(userDTO);
+
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{System.out.println("Failed to obtain access token. Status:"+responseEntity.getStatusCode());
             return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     private String getEmailAddressFromTokenResponse(String accessTokenResponse) throws IOException, InterruptedException {
 
