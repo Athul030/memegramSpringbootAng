@@ -20,10 +20,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class S3FileUploadServiceImpl implements S3FileUploadService {
 
-   private String s3BaseUrl ="https://s3-us-east-2.s3.amazonaws.com/";
+   private String s3BaseUrl ="s3-us-east-2.amazonaws.com/";
    private String bucketName = "memegramawsbucket1";
 
-   private String folderName = "/myfolder/images";
+   private String folderName = "/myfolder/images/";
 
    private final AmazonS3 amazonS3;
 
@@ -43,12 +43,14 @@ public class S3FileUploadServiceImpl implements S3FileUploadService {
                 fos.flush();
 
                 //upload files to s3
-                amazonS3.putObject(new PutObjectRequest(bucketName,folderName+"/"+file.getName(),file)
+                amazonS3.putObject(new PutObjectRequest(bucketName,folderName+file.getName(),file)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
 
-                /*Url location of the upload file in s3, I should save it in DB*/
-                String s3FileAccessUrl = s3BaseUrl.concat(bucketName).concat(folderName)
-                        .concat(file.getName()).replaceAll("\\s","+");
+                /*Url location of the upload file in s3, I should save the s3fileAccessUrl in the DB*/
+                String replacedFileName = file.getName().replaceAll("\\s","+");
+                StringBuffer s3FileAccessUrlBuff = new StringBuffer();
+                s3FileAccessUrlBuff.append("https://").append(bucketName).append(".").append(s3BaseUrl).append(folderName).append(replacedFileName);
+                String s3FileAccessUrl = s3FileAccessUrlBuff.toString();
                 response.put("fileUrl",s3FileAccessUrl);
                 System.out.println("Check the value"+ response);
 

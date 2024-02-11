@@ -5,6 +5,7 @@ import com.athul.memegramspring.entity.Post;
 import com.athul.memegramspring.exceptions.ApiResponseCustom;
 import com.athul.memegramspring.service.FileService;
 import com.athul.memegramspring.service.PostService;
+import com.athul.memegramspring.service.UserService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +34,9 @@ public class PostController {
     private final PostService postService;
 
     private final FileService fileService;
+
+    private final UserService userService;
+
 
     @Value("${project.image}")
     private String path;
@@ -51,6 +57,26 @@ public class PostController {
         String fileName = fileService.uploadImage(path, file);
         postDTO.setImageName(fileName);
         PostDTO createdPost = postService.createPost(postDTO,userId,categoryId);
+        return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
+    }
+
+    //create a post from token without userId
+    @PostMapping(value = "/createPost")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<PostDTO> createPost(@RequestPart PostDTO postDTO,
+                                              @RequestParam String categoryId,
+                                              @RequestPart("file") MultipartFile file,
+                                              @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        Integer parsedCategoryId = Integer.parseInt(categoryId);
+        Integer userId = userService.getUserByUsername(userDetails.getUsername()).getId();
+        //image
+        String fileName = fileService.uploadImage(path, file);
+        postDTO.setImageName(fileName);
+        PostDTO createdPost = postService.createPost(postDTO,userId,parsedCategoryId);
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
 

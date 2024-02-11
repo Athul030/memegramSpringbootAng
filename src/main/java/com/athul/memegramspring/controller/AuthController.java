@@ -12,6 +12,9 @@ import com.athul.memegramspring.service.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,23 +53,18 @@ public class AuthController {
         Authentication authentication = authenticate(request.getUsername(), request.getPassword());
         if(authentication.isAuthenticated()){
 
-            // Check if a refresh token already exists for the user
-            RefreshToken existingRefreshToken = refreshTokenRepo.findByUsername(request.getUsername());
-            RefreshToken refreshToken = null;
-            if (existingRefreshToken == null) {
-                 refreshToken = refreshTokenService.createRefreshToken(request.getUsername());
-            }else{
-                refreshToken =existingRefreshToken;
-            }
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(request.getUsername());
+
 
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-            String token = jwtHelper.generateToken(userDetails);
+            String accessToken = jwtHelper.generateToken(userDetails);
             JwtAuthResponse response= new JwtAuthResponse();
-            response.setAccessToken(token);
-            response.setToken(refreshToken.getToken());
+            response.setAccessToken(accessToken);
+            response.setRefreshToken(refreshToken.getToken());
             response.setUsername(userDetails.getUsername());
             response.setUser(userService.getUserByUsername(userDetails.getUsername()));
+            System.out.println("resInAuthController"+response);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{
             throw new UsernameNotFoundException("Invalid user request");
@@ -85,15 +83,26 @@ public class AuthController {
         return new ResponseEntity<>(registeredUserDTO,HttpStatus.OK);
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("Inside logout");
+        request.getSession().invalidate();
+        response.setHeader("Authorization","");
+        return ResponseEntity.ok("Logout successful");
+    }
+
     @PostMapping("/refreshToken")
-    public JwtAuthResponse refreshToken(@RequestBody RefreshToken refreshToken){
-        return refreshTokenService.findByToken(refreshToken.getToken())
+    @CrossOrigin(origins = "http://localhost:4200")
+    public JwtAuthResponse refreshTokenMethod(@RequestParam("refreshToken") String refreshToken){
+        System.out.println("jjjjjjjjjjjjjjjjjjjauthcorntollerrefershtoken");
+        return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user->{
                     String accessToken= jwtHelper.generateToken(userDetailsService.loadUserByUsername(user.getEmail()));
+                    System.out.println("accessinAuthcontr"+accessToken);
                     return JwtAuthResponse.builder().accessToken(accessToken)
-                            .token(refreshToken.getToken()).build();
+                            .refreshToken(refreshToken).build();
                 }).orElseThrow(()->new RuntimeException("Refresh Token is not in DB"));
     }
 

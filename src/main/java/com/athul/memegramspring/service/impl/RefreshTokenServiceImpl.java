@@ -19,9 +19,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final UserRepo userRepo;
     @Override
     public RefreshToken createRefreshToken(String username) {
+        if(refreshTokenRepo.findByUsername(username)!=null){
+            refreshTokenRepo.delete(refreshTokenRepo.findByUsername(username));
+        }
         RefreshToken refreshToken = RefreshToken.builder().user(userRepo.findByEmails(username))
                 .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(10* 60 *1000)).build();
+                .expiryDate(Instant.now().plusMillis(100* 60 *1000)).build();
 
         return refreshTokenRepo.save(refreshToken);
     }

@@ -16,5 +16,5 @@ public class JwtAuthResponse {
     private String username;
 
     private UserDTO user;
-    private String token;
+    private String refreshToken;
 }

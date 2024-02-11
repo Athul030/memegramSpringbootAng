@@ -41,19 +41,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if(requestHeader!=null && requestHeader.startsWith("Bearer")){
             token = requestHeader.substring(7);
+
             try{
                 username = jwtHelper.getUsernameFromToken(token);
             }catch (IllegalArgumentException e){
-//                logger.info("Illegal argument while fetching the username !!");
                 System.out.println("Illegal argument while fetching the username !!");
                 e.printStackTrace();
             }catch(ExpiredJwtException e){
-//                logger.info("Given jwt token is expired !!");
                 System.out.println("Given jwt token is expired !!");
-
+                response.setHeader("X-Token-Expired", "true");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set status to 401
+                System.out.println("response header is "+response.getHeader("X-Token-Expired"));
                 e.printStackTrace();
             }catch(MalformedJwtException e){
-//                logger.info("Some changes has done in token !! Invalid token");
                 System.out.println("Some changes has done in token !! Invalid token");
 
                 e.printStackTrace();
@@ -75,13 +75,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }else{
-//                logger.info("Invalid JWT token");
                 System.out.println("Invalid JWT token");
             }
         }else{
             System.out.println("Username is null or context is not null ");
         }
 
+        System.out.println(response.getStatus());
+        System.out.println(response.getHeader("X-Token-Expired"));
 
         filterChain.doFilter(request,response);
     }

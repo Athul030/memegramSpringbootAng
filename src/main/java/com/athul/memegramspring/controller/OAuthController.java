@@ -54,6 +54,8 @@ public class OAuthController {
 
 //    private String tokenEndpoint = "https://oauth2.googleapis.com/token";
     private String tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
+
+
     @GetMapping("/login/oauth2/code/google")
     public ResponseEntity<JwtAuthResponse> handleCallBack(HttpServletRequest request) throws IOException, InterruptedException {
         authorizationCode = request.getParameter("code");
@@ -93,6 +95,7 @@ public class OAuthController {
             JwtAuthResponse response = new JwtAuthResponse();
             response.setAccessToken(token);
             response.setUser(userDTO);
+
 
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{System.out.println("Failed to obtain access token. Status:"+responseEntity.getStatusCode());
