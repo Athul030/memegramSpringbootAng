@@ -64,9 +64,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO, Integer userId) {
-
+        String errorCode = "UserServiceImpl:updateUser()";
         User user=userRepo.findById(userId).orElseThrow(
-                ()->new ResourceNotFoundException("User","Id",userId));
+                ()->new ResourceNotFoundException("User","Id",userId,errorCode));
         user.setFullName(userDTO.getFullName());
         user.setUserHandle(userDTO.getUserHandle());
         user.setEmail(userDTO.getEmail());
@@ -93,8 +93,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserById(Integer userId) {
-        User foundedUser=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","Id",userId));
-
+        String errorCode = "UserServiceImpl:getUserById()";
+        User foundedUser=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","Id",userId,errorCode));
         return userToDTO(foundedUser);
     }
 
@@ -106,7 +106,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserByUsername(String username) {
-        User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username));
+        String errorCode = "UserServiceImpl:getUserByUsername()";
+
+        User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username,errorCode));
 
         return userToDTO(foundedUser);
     }
@@ -121,8 +123,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Integer userId) {
+        String errorCode = "UserServiceImpl:deleteUser()";
         User user = userRepo.findById(userId).orElseThrow(
-                ()->new ResourceNotFoundException("User","Id",userId));
+                ()->new ResourceNotFoundException("User","Id",userId,errorCode));
         userRepo.delete(user);
 
     }

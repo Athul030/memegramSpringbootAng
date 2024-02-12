@@ -29,7 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO, Integer categoryId) {
-        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId));
+        String errorCode = "CategoryServiceImpl:updateCategory()";
+        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId,errorCode));
         category.setCategoryTitle(categoryDTO.getCategoryTitle());
         category.setCategoryDescription(categoryDTO.getCategoryDescription());
         Category updatedCat = categoryRepo.save(category);
@@ -38,18 +39,22 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Integer categoryId) {
-        Category category = categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId));
+        String errorCode = "CategoryServiceImpl:deleteCategory()";
+
+        Category category = categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId,errorCode));
         categoryRepo.delete(category);
     }
 
     @Override
     public CategoryDTO getCategory(Integer categoryId) {
-        Category category = categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId));
+        String errorCode = "CategoryServiceImpl:getCategory()";
+        Category category = categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id",categoryId,errorCode));
         return modelMapper.map(category,CategoryDTO.class);
     }
 
     @Override
     public List<CategoryDTO> getAllCategories() {
+
         List<Category> categories = categoryRepo.findAll();
         List<CategoryDTO> returnList = new ArrayList<>();
         for(Category l:categories){

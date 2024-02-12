@@ -9,6 +9,7 @@ import com.athul.memegramspring.service.UserService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -119,6 +120,11 @@ public class PostController {
     })
     public ResponseEntity<List<PostDTO>> getAllPost(){
         List<PostDTO> allPost = postService.getAllPost();
+        String baseUrl = "http://localhost:8080/";
+        allPost.forEach(postDTO -> {
+            String imageUrl= baseUrl+"images/"+postDTO.getImageName();
+            postDTO.setImageUrl(imageUrl);
+        });
         return new ResponseEntity<List<PostDTO>>(allPost,HttpStatus.OK);
     }
 

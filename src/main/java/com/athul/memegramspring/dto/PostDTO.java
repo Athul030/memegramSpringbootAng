@@ -33,4 +33,6 @@ public class PostDTO {
 
     private UserDTO user;
 
+    private String imageUrl;
+
 }

@@ -16,6 +16,14 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String uploadImage(String path, MultipartFile file) throws IOException {
+
+        File parentDirectory = new File(path);
+        if (!parentDirectory.exists()) {
+            boolean success = parentDirectory.mkdirs();
+            if (!success) {
+                throw new IOException("Failed to create parent directory: " + path);
+            }
+        }
         //File name
         String name = file.getOriginalFilename();
         //generate a random name
@@ -24,10 +32,10 @@ public class FileServiceImpl implements FileService {
         //my path
         String filePath = path + File.separator+fileName;
 
-        File f=new File(path);
-        if(!f.exists()){
-            f.mkdir();
-        }
+//        File f=new File(path);
+//        if(!f.exists()){
+//            f.mkdir();
+//        }
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return  fileName;
     }
@@ -36,6 +44,14 @@ public class FileServiceImpl implements FileService {
     public String[] uploadMultipleImage(String path, MultipartFile[] file) throws IOException {
         String[] fileArray=new String[file.length];
         for(int i=0;i<file.length;i++){
+
+            File parentDirectory = new File(path);
+            if (!parentDirectory.exists()) {
+                boolean success = parentDirectory.mkdirs();
+                if (!success) {
+                    throw new IOException("Failed to create parent directory: " + path);
+                }
+            }
 
             MultipartFile file1=file[i];
             String name=file1.getOriginalFilename();

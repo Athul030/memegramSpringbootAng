@@ -37,8 +37,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO createPost(PostDTO postDTO, Integer userId,Integer categoryId) {
-        User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId));
-        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category id",categoryId));
+        String errorCodeFindUser = "PostServiceImpl:createPost()::findUser";
+        String errorCodeFindCategory = "PostServiceImpl:createPost()::findUser";
+
+        User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId,errorCodeFindUser));
+        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category id",categoryId, errorCodeFindCategory));
 
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
@@ -67,8 +70,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO updatePost(PostDTO postDTO,Integer postId) {
-
-        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId));
+        String errorCode = "PostServiceImpl:updatePost()";
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         if(postDTO.getImageName()==null) {
@@ -93,7 +96,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Integer postId) {
-        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId));
+        String errorCode = "PostServiceImpl:deletePost()";
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
         postRepo.delete(post);
 
     }
@@ -108,14 +112,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO getPostById(Integer postId) {
-
-        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId));
+        String errorCode = "PostServiceImpl:getPostById()";
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
         return postToDTO(post);
     }
 
     @Override
     public List<PostDTO> getPostsByCategory(Integer categoryId) {
-        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category id",categoryId));
+        String errorCode = "PostServiceImpl:getPostsByCategory()";
+        Category category= categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category id",categoryId,errorCode));
         List<Post> posts = postRepo.findByCategory(category);
 
         List<PostDTO> postsDtosCat = posts.stream().map((post -> postToDTO(post))).collect(Collectors.toList());
@@ -124,7 +129,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDTO> getPostsByUser(Integer userId) {
-        User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId));
+        String errorCode = "PostServiceImpl:getPostsByUser()";
+        User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId,errorCode));
         List<Post> posts = postRepo.findByUser(user);
 
         List<PostDTO> postsDtosUser = posts.stream().map((post -> postToDTO(post))).collect(Collectors.toList());

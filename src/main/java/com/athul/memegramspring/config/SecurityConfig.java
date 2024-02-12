@@ -9,9 +9,11 @@ import com.athul.memegramspring.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -33,6 +35,7 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedCli
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 
 @Configuration
@@ -79,7 +82,10 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsCustomizer->corsCustomizer.configurationSource(customCors))
                 .authorizeHttpRequests( authorize->authorize
-                          .requestMatchers("/api/v1/auth/refreshToken/**","/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/images/*" ).permitAll()
+                        .requestMatchers("/api/v1/auth/refreshToken/**","/api/v1/auth/**").permitAll()
+                        .requestMatchers("/src/main/resources/static/images/**").permitAll()
+                        .requestMatchers("/static/images/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/callback","/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
