@@ -173,7 +173,7 @@ public class  PostController {
     public ApiResponseCustom deletePost(@PathVariable  Integer postId){
 
         postService.deletePost(postId);
-        return new ApiResponseCustom("Post is successfully deleted",true);
+        return new ApiResponseCustom("Post is successfully deleted",HttpStatus.OK);
 
     }
 

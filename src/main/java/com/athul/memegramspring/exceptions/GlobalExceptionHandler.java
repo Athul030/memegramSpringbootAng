@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseCustom> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
         String message = ex.getMessage();
-        ApiResponseCustom apiResponse = new ApiResponseCustom(message,false);
+        ApiResponseCustom apiResponse = new ApiResponseCustom(message,HttpStatus.NOT_FOUND);
         return new ResponseEntity<ApiResponseCustom>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponseCustom> handleApiException(ApiException ex){
         String message = ex.getMessage();
-        ApiResponseCustom apiResponse = new ApiResponseCustom(message,false);
+        ApiResponseCustom apiResponse = new ApiResponseCustom(message,HttpStatus.BAD_REQUEST);
         return new ResponseEntity<ApiResponseCustom>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 

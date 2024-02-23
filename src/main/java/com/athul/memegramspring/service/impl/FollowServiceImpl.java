@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class FollowServiceImpl implements FollowService {
         Follow connection = new Follow();
         connection.setFollowingId(userRepo.getReferenceById(followingId));
         connection.setFollowerId(userRepo.getReferenceById(followerId));
-        connection.setFollowedDate(new Date());
+        connection.setFollowedDate(LocalDateTime.now());
         followRepo.save(connection);
         return followRepo.save(connection);
     }

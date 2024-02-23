@@ -71,7 +71,7 @@ public class UserController {
     })
     public ResponseEntity<ApiResponseCustom> deleteUser(@PathVariable Integer userId){
         userService.deleteUser(userId);
-        return new ResponseEntity<ApiResponseCustom>(new ApiResponseCustom("User deleted successfully",true), HttpStatus.OK);
+        return new ResponseEntity<ApiResponseCustom>(new ApiResponseCustom("User deleted successfully",HttpStatus.OK), HttpStatus.OK);
     }
 
     //get all users without pageable

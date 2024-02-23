@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -26,7 +27,7 @@ public class Follow {
     @JoinColumn(name="following_id",referencedColumnName = "id")
     private User followingId;
 
-    private Date followedDate;
+    private LocalDateTime followedDate;
 
 
 }

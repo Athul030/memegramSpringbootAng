@@ -1,9 +1,11 @@
 package com.athul.memegramspring.exceptions;
 
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
@@ -12,7 +14,6 @@ import lombok.Setter;
 public class ApiResponseCustom {
 
     private String message;
-    private boolean success;
-
+    private HttpStatus httpStatus;
 
 }
