@@ -83,20 +83,20 @@ public class SecurityConfig  {
                 .cors(corsCustomizer->corsCustomizer.configurationSource(customCors))
                 .authorizeHttpRequests( authorize->authorize
                         .requestMatchers(HttpMethod.GET,"/images/*" ).permitAll()
-                        .requestMatchers("/api/v1/auth/refreshToken/**","/api/v1/auth/**").permitAll()
+                        .requestMatchers("/callback","/callback/**","/api/v1/auth/refreshToken","/api/v1/auth/**").permitAll()
                         .requestMatchers("/src/main/resources/static/images/**").permitAll()
                         .requestMatchers("/static/images/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
-                        .requestMatchers("/callback","/oauth/**","/login/oauth2/code/google").permitAll()
+                        .requestMatchers("/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/test").permitAll()
                         .anyRequest().authenticated())
-                .logout((logout)->logout.logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")) //change it later
+                .logout((logout)->logout.logoutUrl("/api/v1/auth/logout")
+                        .logoutSuccessUrl("/login"))
                 .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-//                        .oauth2Login((login)->login.redirectionEndpoint((endpoint)->
-//                                endpoint.baseUri("/login/oauth2/authorization"))
-//                                .userInfoEndpoint(userInfo-> userInfo.userService(oAuth2UserService)))
+                        .oauth2Login((login)->login.redirectionEndpoint((endpoint)->
+                                endpoint.baseUri("/login/oauth2/authorization"))
+                                .userInfoEndpoint(userInfo-> userInfo.userService(oAuth2UserService)))
         ;
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -126,7 +126,7 @@ public class SecurityConfig  {
 
     }
 
-
+    @Bean
     public OAuth2AuthorizedClientManager auth2AuthorizedClientManager(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository){
 
         OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder().authorizationCode().refreshToken().build();

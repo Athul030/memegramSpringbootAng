@@ -9,6 +9,8 @@ import com.athul.memegramspring.security.JwtAuthResponse;
 import com.athul.memegramspring.security.JwtHelper;
 import com.athul.memegramspring.service.RefreshTokenService;
 import com.athul.memegramspring.service.UserService;
+import com.athul.memegramspring.utils.RefreshTokenRequest;
+import io.jsonwebtoken.Jwt;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -71,6 +73,9 @@ public class AuthController {
         }
     }
 
+
+
+
     @PostMapping("/register")
     @ApiResponses({
             @ApiResponse(responseCode = "201"),
@@ -83,26 +88,29 @@ public class AuthController {
         return new ResponseEntity<>(registeredUserDTO,HttpStatus.OK);
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
-        System.out.println("Inside logout");
-        request.getSession().invalidate();
-        response.setHeader("Authorization","");
-        return ResponseEntity.ok("Logout successful");
-    }
+
 
     @PostMapping("/refreshToken")
-    @CrossOrigin(origins = "http://localhost:4200")
-    public JwtAuthResponse refreshTokenMethod(@RequestParam("refreshToken") String refreshToken){
-        System.out.println("jjjjjjjjjjjjjjjjjjjauthcorntollerrefershtoken");
-        return refreshTokenService.findByToken(refreshToken)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "500")
+    })
+    public JwtAuthResponse refreshTokenMethod(@RequestBody RefreshTokenRequest refreshTokenDTO){
+        String extractRefreshToken = refreshTokenDTO.getRefreshToken();
+
+        return refreshTokenService.findByToken(extractRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user->{
                     String accessToken= jwtHelper.generateToken(userDetailsService.loadUserByUsername(user.getEmail()));
-                    System.out.println("accessinAuthcontr"+accessToken);
-                    return JwtAuthResponse.builder().accessToken(accessToken)
-                            .refreshToken(refreshToken).build();
+                    JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+                    jwtAuthResponse.setAccessToken(accessToken);
+                    jwtAuthResponse.setUsername(user.getUsername());
+                    jwtAuthResponse.setRefreshToken(extractRefreshToken);
+                    jwtAuthResponse.setUser(userService.getUserByUsername(user.getUsername()));
+                    System.out.println("jwtAuthResponse is" + jwtAuthResponse);
+                    return jwtAuthResponse;
                 }).orElseThrow(()->new RuntimeException("Refresh Token is not in DB"));
     }
 
@@ -126,4 +134,7 @@ public class AuthController {
 //            throw new ApiException("Invalid username or password");
 //        }
 //    }
+
+
+
 }

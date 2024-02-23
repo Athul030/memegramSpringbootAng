@@ -18,8 +18,8 @@ import java.util.function.Function;
 @Component
 public class JwtHelper {
 
-    public static final long JWT_TOKEN_VALIDITY = 6 * 10  * 1000 * 100; //60*100seconds
-//    public static final long JWT_TOKEN_VALIDITY = 10  * 1000 ; //60*100seconds
+    public static final long JWT_TOKEN_VALIDITY = 6 * 10  * 1000 * 100 * 2; //60 *2 *100seconds
+//    public static final long JWT_TOKEN_VALIDITY = 10  * 1000 ; //10seconds
 
 //    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 

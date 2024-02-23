@@ -14,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.http.client.methods.HttpGet;
@@ -57,7 +58,7 @@ public class OAuthController {
 
 
     @GetMapping("/login/oauth2/code/google")
-    public ResponseEntity<JwtAuthResponse> handleCallBack(HttpServletRequest request) throws IOException, InterruptedException {
+    public ResponseEntity<JwtAuthResponse> handleCallBack(HttpServletRequest request, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
         authorizationCode = request.getParameter("code");
 
         StringBuffer requestBodyBuffer = new StringBuffer();
@@ -96,6 +97,8 @@ public class OAuthController {
             response.setAccessToken(token);
             response.setUser(userDTO);
 
+            String callbackUrl = "http://localhost:8080/callback";
+            httpServletResponse.sendRedirect(callbackUrl);
 
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{System.out.println("Failed to obtain access token. Status:"+responseEntity.getStatusCode());
@@ -119,7 +122,7 @@ public class OAuthController {
         String responseJson = response.body();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseJson);
-
+        System.out.println(jsonNode);
         // Extract email from the response
         String email = jsonNode.get("email").asText();
         System.out.println("Email: " + email);

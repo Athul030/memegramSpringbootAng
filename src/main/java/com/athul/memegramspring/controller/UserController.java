@@ -6,8 +6,12 @@ import com.athul.memegramspring.service.UserService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +22,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -69,7 +74,8 @@ public class UserController {
         return new ResponseEntity<ApiResponseCustom>(new ApiResponseCustom("User deleted successfully",true), HttpStatus.OK);
     }
 
-    @GetMapping("/getAll")
+    //get all users without pageable
+    @GetMapping("/getAllUsers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -79,6 +85,36 @@ public class UserController {
         List<UserDTO> listOfUsers =userService.getAllUsers();
         return new ResponseEntity<>(listOfUsers,HttpStatus.OK);
     }
+
+    //get all users with pageable
+    @GetMapping("/getAll")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<Page<UserDTO>> getAllUsersWithPageable(Pageable pageable){
+        System.out.println("Page size here: "+pageable.getPageSize());
+        System.out.println("Page No. : "+pageable.getPageNumber());
+
+        Page<UserDTO> listOfUsersPage =userService.getAllUsersForPageable(pageable);
+        return new ResponseEntity<>(listOfUsersPage,HttpStatus.OK);
+    }
+
+    //front end receives current user from token
+    @GetMapping("/currentUser")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<UserDTO> getSingleUser(@AuthenticationPrincipal UserDetails userDetails){
+        Integer userId = userService.getUserByUsername(userDetails.getUsername()).getId();
+        UserDTO userDTO =userService.getUserById(userId);
+        return new ResponseEntity<>(userDTO,HttpStatus.OK);
+    }
+
+
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{userId}")
     @ApiResponses(value = {

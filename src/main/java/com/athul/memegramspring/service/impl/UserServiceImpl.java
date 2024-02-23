@@ -12,6 +12,9 @@ import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,8 @@ public class UserServiceImpl implements UserService {
         //2 is ROLE_USER
         Role role = roleRepo.findById(2).get();
         user.getRoles().add(role);
+        user.setBlocked(false);
+        user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
         User savedUser = userRepo.save(user);
         return userToDTO(savedUser);
     }
@@ -58,6 +63,8 @@ public class UserServiceImpl implements UserService {
         user.setBio(userDto.getBio());
         user.setPassword(userDto.getPassword());
         user.setProvider(Provider.LOCAL);
+        user.setBlocked(false);
+
         User savedUser = userRepo.save(user);
         return userToDTO(savedUser);
     }
@@ -116,10 +123,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepo.findAll();
+
         List<UserDTO> userDTOs = users.stream().map(user -> userToDTO(user))
                 .collect(Collectors.toList());
         return userDTOs;
     }
+
+
+    @Override
+    public Page<UserDTO> getAllUsersForPageable(Pageable pageable) {
+        Page<User> page = userRepo.findAllPageable(pageable);
+        List<UserDTO> userDTOs = page.stream().map(user -> userToDTO(user))
+                .collect(Collectors.toList());
+        return new PageImpl<>(userDTOs,pageable,page.getTotalElements());
+    }
+
 
     @Override
     public void deleteUser(Integer userId) {
@@ -140,10 +158,11 @@ public class UserServiceImpl implements UserService {
         user.setUserHandle(userHandle);
         user.setFullName(userHandle);
         user.setProvider(Provider.GOOGLE);
-
+        user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
         //2 is ROLE_USER
         Role role = roleRepo.findById(2).get();
         user.getRoles().add(role);
+        user.setBlocked(false);
 
         User savedOAuthUser = userRepo.save(user);
         return userToDTO(savedOAuthUser);
@@ -170,8 +189,17 @@ public class UserServiceImpl implements UserService {
         userDTO.setPassword(user.getPassword());
         Set<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toSet());
         userDTO.setRoles(roleDtos);
+        userDTO.setBlocked(user.isBlocked());
         userDTO.setProvider(user.getProvider());
+        userDTO.setProfilePicUrl(user.getProfilePicUrl());
         return userDTO;
 
+    }
+
+    public void changeProfilePic (String username, String fileName){
+        String errorCode = "UserServiceImpl:changeProfilePic()";
+        User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username,errorCode));
+        foundedUser.setProfilePicUrl(fileName);
+        userRepo.save(foundedUser);
     }
 }

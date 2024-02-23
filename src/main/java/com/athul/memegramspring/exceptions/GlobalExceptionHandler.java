@@ -1,6 +1,7 @@
 package com.athul.memegramspring.exceptions;
 
 import jakarta.persistence.Entity;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,10 +51,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ApiResponseCustom>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
+//    @ExceptionHandler(DataIntegrityViolationException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+//        return ResponseEntity.badRequest().body("Email already exists");
+//    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
-        return ResponseEntity.badRequest().body("Email already exists");
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+        return new ResponseEntity<>("Data integrity violation: " + ex.getMessage(), HttpStatus.CONFLICT);
     }
+
+
+
+
 }
 

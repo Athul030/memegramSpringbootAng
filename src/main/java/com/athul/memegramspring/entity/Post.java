@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="post")
@@ -27,6 +28,8 @@ public class Post {
 
     private Date addedDate;
 
+    @OneToMany(mappedBy = "post")
+    private List<Like> likes;
 
     @ManyToOne
     private User user;
@@ -34,5 +37,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name="category_id")
     private Category category;
+
+    private String imageUrl;
 
 }

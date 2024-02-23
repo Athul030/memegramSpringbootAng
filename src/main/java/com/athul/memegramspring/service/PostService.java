@@ -2,6 +2,8 @@ package com.athul.memegramspring.service;
 
 import com.athul.memegramspring.dto.PostDTO;
 import com.athul.memegramspring.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,9 +16,9 @@ public interface PostService {
 
     //delete
     void deletePost(Integer postId);
-
-    //get all posts
     List<PostDTO> getAllPost();
+    //get all posts
+    Page<PostDTO> getAllPost(Pageable pageable);
 
     //get a single post
     PostDTO getPostById(Integer postId);

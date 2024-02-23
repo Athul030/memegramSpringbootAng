@@ -33,4 +33,8 @@ public class UserDTO {
     private Provider provider;
 
     private Set<RoleDto> roles = new HashSet<>();
+
+    private String profilePicUrl;
+
+    private boolean isBlocked;
 }

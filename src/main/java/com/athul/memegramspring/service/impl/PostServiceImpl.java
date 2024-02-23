@@ -16,6 +16,9 @@ import com.athul.memegramspring.service.PostService;
 import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -100,6 +103,13 @@ public class PostServiceImpl implements PostService {
         Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
         postRepo.delete(post);
 
+    }
+
+    @Override
+    public Page<PostDTO> getAllPost(Pageable pageable) {
+        Page<Post> page = postRepo.findAll(pageable);
+        List<PostDTO> postDTOS = page.getContent().stream().map(post -> postToDTO(post)).collect(Collectors.toList());
+        return new PageImpl<>(postDTOS,pageable,page.getTotalElements());
     }
 
     @Override

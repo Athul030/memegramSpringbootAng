@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ import java.util.List;
 @RequestMapping("/api/")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class PostController {
+public class  PostController {
 
     private final PostService postService;
 
@@ -111,21 +113,40 @@ public class PostController {
 
     }
 
-    //get all posts
+    //get all posts pageable
     @GetMapping("/posts")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<List<PostDTO>> getAllPost(){
-        List<PostDTO> allPost = postService.getAllPost();
+    public ResponseEntity<Page<PostDTO>> getAllPostWIthPageable( Pageable pageable){
+
+        Page<PostDTO> page = postService.getAllPost(pageable);
         String baseUrl = "http://localhost:8080/";
-        allPost.forEach(postDTO -> {
-            String imageUrl= baseUrl+"images/"+postDTO.getImageName();
+        page.getContent().forEach(postDTO -> {
+            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
             postDTO.setImageUrl(imageUrl);
         });
-        return new ResponseEntity<List<PostDTO>>(allPost,HttpStatus.OK);
+        return new ResponseEntity<>(page,HttpStatus.OK);
+    }
+
+    //get all posts without pageable
+    @GetMapping("/getAllPosts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<List<PostDTO>> getAllPost(){
+
+        List<PostDTO> page1 = postService.getAllPost();
+        String baseUrl = "http://localhost:8080/";
+        page1.stream().forEach(postDTO -> {
+            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+            postDTO.setImageUrl(imageUrl);
+        });
+        return new ResponseEntity<>(page1,HttpStatus.OK);
     }
 
     //get post details by id

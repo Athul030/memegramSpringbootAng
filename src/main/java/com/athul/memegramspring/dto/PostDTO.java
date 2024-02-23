@@ -1,6 +1,7 @@
 package com.athul.memegramspring.dto;
 
 import com.athul.memegramspring.entity.Category;
+import com.athul.memegramspring.entity.Like;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.PostType;
 import jakarta.persistence.JoinColumn;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +37,7 @@ public class PostDTO {
 
     private String imageUrl;
 
+    private boolean isDeleted;
+
+    private List<LikeDTO> likes;
 }

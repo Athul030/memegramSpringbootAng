@@ -47,11 +47,22 @@ public class User implements UserDetails {
     inverseJoinColumns = @JoinColumn(name="role",referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
+    private String profilePicUrl;
+
+    @Column(name = "is_blocked")
+    private boolean isBlocked;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = roles.stream().map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return authorities;
     }
+
+    @ManyToMany
+    @JoinTable(name="user_followers",joinColumns = @JoinColumn(name="following_id"),inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    private List<User> followers;
+
+    @ManyToMany(mappedBy = "followers")
+    private List<User> following;
 
     @Override
     public String getUsername() {

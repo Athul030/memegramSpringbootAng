@@ -2,6 +2,8 @@ package com.athul.memegramspring.service;
 
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -21,7 +23,11 @@ public interface UserService {
 
     List<UserDTO> getAllUsers();
 
+    Page<UserDTO> getAllUsersForPageable(Pageable pageable);
+
     void deleteUser(Integer userId);
 
     UserDTO saveUserDTOFromOAuth(String username);
+
+    void changeProfilePic(String username, String fileName);
 }
