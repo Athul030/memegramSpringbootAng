@@ -1,7 +1,10 @@
 package com.athul.memegramspring.service;
 
+import com.athul.memegramspring.dto.FollowDTO;
 import com.athul.memegramspring.dto.UserDTO;
+import com.athul.memegramspring.entity.Follow;
 import com.athul.memegramspring.entity.User;
+import com.athul.memegramspring.utils.UserBlockRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -30,4 +33,13 @@ public interface UserService {
     UserDTO saveUserDTOFromOAuth(String username);
 
     void changeProfilePic(String username, String fileName);
+
+    UserDTO blockAUser(UserBlockRequest userBlockRequest);
+
+    UserDTO unBlockAUser(UserBlockRequest userBlockRequest);
+
+    int findUserIdFromUsername(String username);
+
+    FollowDTO followToDTO(Follow follow);
+
 }

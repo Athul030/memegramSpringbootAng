@@ -1,15 +1,14 @@
 package com.athul.memegramspring.service.impl;
 
-import com.athul.memegramspring.dto.CategoryDTO;
-import com.athul.memegramspring.dto.PostDTO;
-import com.athul.memegramspring.dto.RoleDto;
-import com.athul.memegramspring.dto.UserDTO;
+import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.Category;
+import com.athul.memegramspring.entity.Like;
 import com.athul.memegramspring.entity.Post;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.PostType;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.CategoryRepo;
+import com.athul.memegramspring.repository.LikeRepo;
 import com.athul.memegramspring.repository.PostRepo;
 import com.athul.memegramspring.repository.UserRepo;
 import com.athul.memegramspring.service.PostService;
@@ -35,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private final UserService userService;
     private final CategoryRepo categoryRepo;
     private final ModelMapper modelMapper;
+    private final LikeRepo likeRepo;
 
 
 
@@ -142,10 +142,29 @@ public class PostServiceImpl implements PostService {
         String errorCode = "PostServiceImpl:getPostsByUser()";
         User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId,errorCode));
         List<Post> posts = postRepo.findByUser(user);
+        ModelMapper modelMapper2 = new ModelMapper();
 
-        List<PostDTO> postsDtosUser = posts.stream().map((post -> postToDTO(post))).collect(Collectors.toList());
+        List<PostDTO> postsDtosUser = posts.stream().map(post -> {
+            PostDTO postDTO = modelMapper2.map(post, PostDTO.class);
+            List<LikeDTO> likeDTOS = post.getLikes().stream().map(like -> modelMapper2.map(like, LikeDTO.class)).collect(Collectors.toList());
+            postDTO.setLikes(likeDTOS);
+            return postDTO;
+        }).collect(Collectors.toList());
+
+     String baseUrl = "http://localhost:8080/";
+        postsDtosUser.stream().forEach(postDTO -> {
+
+            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+            postDTO.setImageUrl(imageUrl);
+        });
+
         return postsDtosUser;
 
+    }
+
+    @Override
+    public int numberOfPostByAUser(String username) {
+        return postRepo.countOfPostByUser(username);
     }
 
     private UserDTO userToDTO(User user){
@@ -180,6 +199,18 @@ public class PostServiceImpl implements PostService {
         postDTO.setAddedDate(post.getAddedDate());
         postDTO.setUser(userToDTO(post.getUser()));
         postDTO.setCategory(catToDTO(post.getCategory()));
+        ModelMapper modelMapper1 = new ModelMapper();
+        List<LikeDTO> likeDTOS = post.getLikes().stream().map(x->{
+
+            LikeDTO likeDTO = new LikeDTO();
+            likeDTO.setPostDTO(modelMapper1.map(x.getPost(), PostDTO.class));
+            likeDTO.setUserDTO(modelMapper1.map(x.getUser(), UserDTO.class));
+            likeDTO.setLikeId(x.getLikeId());
+            likeDTO.setLikedDate(x.getLikedDate());
+            return likeDTO;
+
+        }).collect(Collectors.toList());
+        postDTO.setLikes(likeDTOS);
         return postDTO;
 
     }

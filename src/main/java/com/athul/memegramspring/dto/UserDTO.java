@@ -1,12 +1,14 @@
 package com.athul.memegramspring.dto;
 
 import com.athul.memegramspring.enums.Provider;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -37,4 +39,9 @@ public class UserDTO {
     private String profilePicUrl;
 
     private boolean isBlocked;
+
+    private List<FollowerDTO> followers;
+    private List<FollowingDTO> following;
+
+    private Set<UserDTO> blockedUsers = new HashSet<>();
 }

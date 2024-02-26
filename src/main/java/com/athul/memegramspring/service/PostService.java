@@ -29,4 +29,6 @@ public interface PostService {
     //get all posts by user
     List<PostDTO> getPostsByUser(Integer userId);
 
+    int numberOfPostByAUser(String username);
+
 }

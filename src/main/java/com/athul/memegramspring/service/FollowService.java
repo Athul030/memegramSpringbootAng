@@ -12,4 +12,5 @@ public interface FollowService {
 
     FollowerFollowingDetails getDetailsOfFollowersAndFollowing(int userId);
 
+
 }

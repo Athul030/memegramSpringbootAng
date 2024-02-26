@@ -6,6 +6,7 @@ import com.athul.memegramspring.exceptions.ApiResponseCustom;
 import com.athul.memegramspring.service.FileService;
 import com.athul.memegramspring.service.PostService;
 import com.athul.memegramspring.service.UserService;
+import com.athul.memegramspring.utils.FollowerFollowingDetails;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
@@ -83,20 +85,35 @@ public class  PostController {
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
 
-    //get by user
-    @GetMapping("/user/{userId}/posts")
+//    //get by user
+//    @GetMapping("/user/{userId}/posts")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Ok"),
+//            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//            @ApiResponse(responseCode = "404",description = "User not found"),
+//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+//    })
+//    public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Integer userId){
+//
+//        List<PostDTO> postsByUser = postService.getPostsByUser(userId);
+//        return new ResponseEntity<List<PostDTO>>(postsByUser,HttpStatus.OK);
+//
+//    }
+    //get posts by user from TOken
+    @GetMapping("/user/posts")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404",description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Integer userId){
-
+    public ResponseEntity<List<PostDTO>> getPostsByUser(Authentication authentication){
+        Integer userId = userService.findUserIdFromUsername(authentication.getName());
         List<PostDTO> postsByUser = postService.getPostsByUser(userId);
         return new ResponseEntity<List<PostDTO>>(postsByUser,HttpStatus.OK);
 
     }
+
 
     //get by category
     @GetMapping("/category/{categoryId}/posts")
@@ -220,5 +237,12 @@ public class  PostController {
         InputStream resource = fileService.getResource(path,imageName);
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         StreamUtils.copy(resource,response.getOutputStream());
+    }
+
+    @GetMapping("/postCountOfUser")
+    ResponseEntity<Integer> postCountOfUser(Authentication authentication){
+        String username = authentication.getName();
+        int count = postService.numberOfPostByAUser(username);
+        return new ResponseEntity<>(count,HttpStatus.OK);
     }
 }

@@ -63,6 +63,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Data integrity violation: " + ex.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(ApiResponseCustomBlockedUser.class)
+    public ResponseEntity<Object>  handleBlockedUserException(ApiResponseCustomBlockedUser ex){
+        return new ResponseEntity<>("You are blocked from accessing Memegram",HttpStatus.UNAUTHORIZED);
+    }
+
 
 
 

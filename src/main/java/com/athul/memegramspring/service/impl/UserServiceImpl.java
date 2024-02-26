@@ -1,14 +1,16 @@
 package com.athul.memegramspring.service.impl;
 
-import com.athul.memegramspring.dto.RoleDto;
-import com.athul.memegramspring.dto.UserDTO;
+import com.athul.memegramspring.dto.*;
+import com.athul.memegramspring.entity.Follow;
 import com.athul.memegramspring.entity.Role;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
+import com.athul.memegramspring.repository.FollowRepo;
 import com.athul.memegramspring.repository.RoleRepo;
 import com.athul.memegramspring.repository.UserRepo;
 import com.athul.memegramspring.service.UserService;
+import com.athul.memegramspring.utils.UserBlockRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
-
+    private final FollowRepo followRepo;
 
 
     @Override
@@ -126,6 +129,8 @@ public class UserServiceImpl implements UserService {
 
         List<UserDTO> userDTOs = users.stream().map(user -> userToDTO(user))
                 .collect(Collectors.toList());
+
+
         return userDTOs;
     }
 
@@ -187,13 +192,38 @@ public class UserServiceImpl implements UserService {
         userDTO.setEmail(user.getEmail());
         userDTO.setBio(user.getBio());
         userDTO.setPassword(user.getPassword());
+
         Set<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toSet());
         userDTO.setRoles(roleDtos);
+
+        List<FollowerDTO> followerIds = followRepo.followerList(user).stream().map(this::mapUserToFollowerDTO).collect(Collectors.toList());
+        userDTO.setFollowers(followerIds);
+
+        List<FollowingDTO> followingIds = followRepo.followingList(user).stream().map(this::mapUserToFollowingDTO).collect(Collectors.toList());
+        userDTO.setFollowing(followingIds);
+
+
+
+
+        Set<UserDTO> blockedIds = user.getBlockedUsers().stream().map(blockedUser->modelMapper.map(blockedUser, UserDTO.class)).collect(Collectors.toSet());
+        userDTO.setBlockedUsers(blockedIds);
         userDTO.setBlocked(user.isBlocked());
         userDTO.setProvider(user.getProvider());
         userDTO.setProfilePicUrl(user.getProfilePicUrl());
         return userDTO;
 
+    }
+
+    private FollowerDTO mapUserToFollowerDTO(User user) {
+        FollowerDTO followerDTO = modelMapper.map(user, FollowerDTO.class);
+        followerDTO.setEmail(user.getEmail());
+        return followerDTO;
+    }
+
+    private FollowingDTO mapUserToFollowingDTO(User user) {
+        FollowingDTO followingDTO = modelMapper.map(user, FollowingDTO.class);
+        followingDTO.setEmail(user.getEmail());
+        return followingDTO;
     }
 
     public void changeProfilePic (String username, String fileName){
@@ -202,4 +232,55 @@ public class UserServiceImpl implements UserService {
         foundedUser.setProfilePicUrl(fileName);
         userRepo.save(foundedUser);
     }
+
+    @Override
+    public UserDTO blockAUser(UserBlockRequest userBlockRequest) {
+        String errorCode = "UserServiceImpl:blockAUser()";
+        User blockingUser = userRepo.findById(userBlockRequest.getBlockingUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "Id", userBlockRequest.getBlockingUserId(),errorCode));
+        User blockedUser = userRepo.findById(userBlockRequest.getBlockedUserId()).orElseThrow(()-> new ResourceNotFoundException("User","Id", userBlockRequest.getBlockedUserId(),errorCode));
+        blockingUser.getBlockedUsers().add(blockedUser);
+        User user = userRepo.save(blockingUser);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        return userDTO;
+
+    }
+
+    @Override
+    public UserDTO unBlockAUser(UserBlockRequest userBlockRequest) {
+        String errorCode = "UserServiceImpl:unBlockAUser()";
+        User blockingUser = userRepo.findById(userBlockRequest.getBlockingUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "Id", userBlockRequest.getBlockingUserId(),errorCode));
+        User unBlockedUser = userRepo.findById(userBlockRequest.getBlockedUserId()).orElseThrow(()-> new ResourceNotFoundException("User","Id", userBlockRequest.getBlockedUserId(),errorCode));
+        blockingUser.getBlockedUsers().remove(unBlockedUser);
+        User user = userRepo.save(blockingUser);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        return userDTO;
+    }
+
+    @Override
+    public int findUserIdFromUsername(String username) {
+        String errorCode = "FollowServiceImpl:findUserIdFromUsername()";
+
+        User user = userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","username",username,errorCode));
+        int userId = user.getId();
+        return userId;
+    }
+
+    @Override
+    public FollowDTO followToDTO(Follow follow) {
+        FollowDTO followDTO = new FollowDTO();
+        followDTO.setId(follow.getId());
+        ModelMapper modelMapper1 = new ModelMapper();
+        //mapping user entities to my dto
+        UserDTO followerDTO = modelMapper1.map(userRepo.findById(follow.getFollower().getId()), UserDTO.class);
+        UserDTO followingDTO = modelMapper1.map(userRepo.findById(follow.getFollowing().getId()), UserDTO.class);
+
+        followDTO.setFollower(followerDTO);
+        followDTO.setFollowing(followingDTO);
+        followDTO.setFollowedDate(follow.getFollowedDate());
+
+        return followDTO;
+
+    }
+
+
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,9 +16,9 @@ public class FollowDTO {
 
     private int id;
 
-    private User followerId;
+    private UserDTO follower;
 
-    private User followingId;
+    private UserDTO following;
 
-    private Date followedDate;
+    private LocalDateTime followedDate;
 }

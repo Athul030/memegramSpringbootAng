@@ -3,6 +3,7 @@ package com.athul.memegramspring.controller;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.RefreshToken;
 import com.athul.memegramspring.exceptions.ApiException;
+import com.athul.memegramspring.exceptions.ApiResponseCustomBlockedUser;
 import com.athul.memegramspring.repository.RefreshTokenRepo;
 import com.athul.memegramspring.security.JwtAuthRequest;
 import com.athul.memegramspring.security.JwtAuthResponse;
@@ -20,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,7 +52,7 @@ public class AuthController {
             @ApiResponse(responseCode = "404"), //user not found
             @ApiResponse(responseCode = "500") //unexpected error during auth or tok gen
     })
-    public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request)  {
+    public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws ApiResponseCustomBlockedUser {
 
         Authentication authentication = authenticate(request.getUsername(), request.getPassword());
         if(authentication.isAuthenticated()){
@@ -114,14 +116,16 @@ public class AuthController {
                 }).orElseThrow(()->new RuntimeException("Refresh Token is not in DB"));
     }
 
-    private Authentication authenticate(String username,String password) {
+    private Authentication authenticate(String username,String password) throws ApiResponseCustomBlockedUser {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
 
         try{
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             return authentication;
+
         }catch (BadCredentialsException e){
-            throw new ApiException("Invalid username or password");
+            if(userService.getUserByUsername(username).isBlocked()==true)   throw new ApiResponseCustomBlockedUser("You are blocked from using Memegram",HttpStatus.UNAUTHORIZED, "401");
+            else throw new ApiException("Invalid username or password");
         }
     }
 

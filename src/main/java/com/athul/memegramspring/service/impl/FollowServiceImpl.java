@@ -29,8 +29,8 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public Follow follow(int followerId, int followingId) {
         Follow connection = new Follow();
-        connection.setFollowingId(userRepo.getReferenceById(followingId));
-        connection.setFollowerId(userRepo.getReferenceById(followerId));
+        connection.setFollowing(userRepo.getReferenceById(followingId));
+        connection.setFollower(userRepo.getReferenceById(followerId));
         connection.setFollowedDate(LocalDateTime.now());
         followRepo.save(connection);
         return followRepo.save(connection);
@@ -72,4 +72,6 @@ public class FollowServiceImpl implements FollowService {
         currentFollowerFollowingDetails.setFollowingNumber(followingCount);
         return currentFollowerFollowingDetails;
     }
+
+
 }

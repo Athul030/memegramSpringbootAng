@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name = "follows",uniqueConstraints = {@UniqueConstraint(columnNames = {"follower_id","following_id"})})
+@Table(name = "follows",uniqueConstraints = {@UniqueConstraint(columnNames = {"follower","following"})})
 @NoArgsConstructor
 public class Follow {
     @Id
@@ -20,12 +20,12 @@ public class Follow {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name="follower_id",referencedColumnName = "id")
-    private User followerId;
+    @JoinColumn(name="follower",referencedColumnName = "id")
+    private User follower;
 
     @ManyToOne
-    @JoinColumn(name="following_id",referencedColumnName = "id")
-    private User followingId;
+    @JoinColumn(name="following",referencedColumnName = "id")
+    private User following;
 
     private LocalDateTime followedDate;
 

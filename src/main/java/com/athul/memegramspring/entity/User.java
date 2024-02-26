@@ -57,12 +57,15 @@ public class User implements UserDetails {
         return authorities;
     }
 
-    @ManyToMany
-    @JoinTable(name="user_followers",joinColumns = @JoinColumn(name="following_id"),inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    private List<User> followers;
+    @OneToMany(mappedBy = "follower")
+    private List<Follow> followers;
 
-    @ManyToMany(mappedBy = "followers")
-    private List<User> following;
+    @OneToMany(mappedBy = "following")
+    private List<Follow> following;
+
+    @ManyToMany
+    @JoinTable(name = "user_blocks",joinColumns = @JoinColumn(name = "blockingUserId"),inverseJoinColumns = @JoinColumn(name = "blockedUserId"))
+    private Set<User> blockedUsers;
 
     @Override
     public String getUsername() {

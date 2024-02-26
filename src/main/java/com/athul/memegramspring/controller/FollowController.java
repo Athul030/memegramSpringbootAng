@@ -13,6 +13,7 @@ import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,9 +38,10 @@ public class FollowController {
         return new ResponseEntity<>(true,HttpStatus.OK);
     }
 
-    @GetMapping("/followerAndFollowingDetails")
-    ResponseEntity<FollowerFollowingDetails> followersAndFollowingDetails(@RequestParam int userId){
-        FollowerFollowingDetails responseDetails = followService.getDetailsOfFollowersAndFollowing(userId);
-        return new ResponseEntity<>(responseDetails,HttpStatus.OK);
+        @GetMapping("/followerAndFollowingDetails")
+    ResponseEntity<FollowerFollowingDetails> followersAndFollowingDetails(Authentication authentication){
+
+        FollowerFollowingDetails followerFollowingDetails = followService.getDetailsOfFollowersAndFollowing(userService.findUserIdFromUsername(authentication.getName()));
+        return new ResponseEntity<>(followerFollowingDetails,HttpStatus.OK);
     }
 }

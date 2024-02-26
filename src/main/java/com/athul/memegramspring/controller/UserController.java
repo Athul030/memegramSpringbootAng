@@ -3,9 +3,11 @@ package com.athul.memegramspring.controller;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.exceptions.ApiResponseCustom;
 import com.athul.memegramspring.service.UserService;
+import com.athul.memegramspring.utils.UserBlockRequest;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,14 +21,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class UserController {
 
-    private UserService userService;
-
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping("/register")
     @ApiResponses(value = {
@@ -133,5 +131,24 @@ public class UserController {
     public ResponseEntity<?> tester(){
         System.out.println("connection success");
         return new ResponseEntity<>("hi",HttpStatus.OK);
+    }
+
+
+    //block another user
+    @PostMapping("/userBlock")
+    public ResponseEntity<?> blockAUser(@RequestBody UserBlockRequest userBlockRequest){
+
+        UserDTO userDTO = userService.blockAUser(userBlockRequest);
+        return new ResponseEntity<>("User Successfully Blocked",HttpStatus.OK);
+
+    }
+
+    //un block another user
+    @PostMapping("/userUnBlock")
+    public ResponseEntity<?> unBlockAUser(@RequestBody UserBlockRequest userBlockRequest){
+
+        UserDTO userDTO = userService.unBlockAUser(userBlockRequest);
+        return new ResponseEntity<>("User Successfully Un Blocked",HttpStatus.OK);
+
     }
 }
