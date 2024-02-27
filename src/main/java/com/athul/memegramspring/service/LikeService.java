@@ -7,7 +7,7 @@ import com.athul.memegramspring.entity.Like;
 public interface LikeService {
 
     LikeDTO likeContent(int userIdOfPersonLiking, int postId);
-    void unLikeContent(int userIdOfPersonUnliking,int postId);
+    LikeDTO unLikeContent(int userIdOfPersonUnliking,int postId);
 
     int noOfLikes(int postId);
 

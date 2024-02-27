@@ -1,10 +1,7 @@
 package com.athul.memegramspring.service.impl;
 
 import com.athul.memegramspring.dto.*;
-import com.athul.memegramspring.entity.Category;
-import com.athul.memegramspring.entity.Like;
-import com.athul.memegramspring.entity.Post;
-import com.athul.memegramspring.entity.User;
+import com.athul.memegramspring.entity.*;
 import com.athul.memegramspring.enums.PostType;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.CategoryRepo;
@@ -20,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -177,6 +175,7 @@ public class PostServiceImpl implements PostService {
         userDTO.setPassword(user.getPassword());
         Set<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toSet());
         userDTO.setRoles(roleDtos);
+        userDTO.setProfilePicUrl(user.getProfilePicUrl());
         return userDTO;
 
     }
@@ -211,9 +210,18 @@ public class PostServiceImpl implements PostService {
 
         }).collect(Collectors.toList());
         postDTO.setLikes(likeDTOS);
+
+        postDTO.setComments(post.getComments().stream().map(x->modelMapper1.map(x, CommentDTO.class)).collect(Collectors.toList()));
+        CommentDTO lastComment = post.getComments().stream().max(Comparator.comparing(Comment::getCommentedDate))
+                .map(x->modelMapper1.map(x, CommentDTO.class)).orElse(null);
+        if(lastComment!=null) {
+            postDTO.setLastComment(lastComment);
+        }
         return postDTO;
 
     }
+
+
 
 
 }

@@ -9,10 +9,10 @@ import com.athul.memegramspring.utils.FollowRequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,9 +26,15 @@ public class CommentController {
     }
 
     @DeleteMapping("/deleteComment")
-    ApiResponseCustom follow(@RequestBody CommentDTO commentDTO){
+    ApiResponseCustom follow(@RequestBody CommentDTO commentDTO, Authentication authentication){
 
-        commentService.deleteComment(commentDTO.getCommentId());
+        commentService.deleteComment(commentDTO.getCommentId(),authentication.getName());
         return new ApiResponseCustom("Comment is successfully deleted",HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllComments/{postId}")
+    ResponseEntity<List<CommentDTO>> getAllTheComments(@PathVariable("postId") int postId){
+        List<CommentDTO> commentDTOS = commentService.getAllComments(postId);
+        return new ResponseEntity<>(commentDTOS,HttpStatus.OK);
     }
 }

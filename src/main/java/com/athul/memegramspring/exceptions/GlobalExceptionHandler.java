@@ -68,6 +68,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("You are blocked from accessing Memegram",HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ResponseEntity<String> handlePermissionDeniedException(PermissionDeniedException ex){
+        return new ResponseEntity<>("You don't have permission to delete this comment",HttpStatus.FORBIDDEN);
+    }
+
 
 
 

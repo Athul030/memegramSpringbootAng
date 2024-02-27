@@ -1,9 +1,11 @@
 package com.athul.memegramspring.dto;
 
 import com.athul.memegramspring.entity.Category;
+import com.athul.memegramspring.entity.Comment;
 import com.athul.memegramspring.entity.Like;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.PostType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@JsonIgnoreProperties({"comments"})  // Add this annotation to ignore the "comments" property during serialization
+
 @NoArgsConstructor
 public class PostDTO {
 
@@ -40,4 +44,9 @@ public class PostDTO {
     private boolean isDeleted;
 
     private List<LikeDTO> likes;
+
+    private List<CommentDTO> comments;
+
+    private CommentDTO lastComment;
+
 }

@@ -38,10 +38,10 @@ public class LikeController {
 
     @PostMapping("/unlike")
     ResponseEntity<LikeResponse> unlikeAPost(@RequestBody LikeRequestBody likeRequestBody){
-        likeService.unLikeContent(likeRequestBody.getUserIdOfPersonLiking(), likeRequestBody.getPostId());
+        LikeDTO deletedLike = likeService.unLikeContent(likeRequestBody.getUserIdOfPersonLiking(), likeRequestBody.getPostId());
         int likeCount = likeService.noOfLikes(likeRequestBody.getPostId());
 
-        LikeResponse likeResponse = new LikeResponse(likeCount,new LikeDTO());
+        LikeResponse likeResponse = new LikeResponse(likeCount,deletedLike);
         return new ResponseEntity<>(likeResponse,HttpStatus.OK);
     }
 }

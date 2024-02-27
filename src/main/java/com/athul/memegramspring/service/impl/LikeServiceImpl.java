@@ -46,7 +46,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public void unLikeContent(int userIdOfPersonUnliking, int postId) {
+    public LikeDTO unLikeContent(int userIdOfPersonUnliking, int postId) {
 
         String errorCode = "LikeServiceImpl:unLikeContent()";
         User unLikedUser=userRepo.findById(userIdOfPersonUnliking).orElseThrow(()->new ResourceNotFoundException("User","Id",userIdOfPersonUnliking,errorCode));
@@ -54,6 +54,8 @@ public class LikeServiceImpl implements LikeService {
         Like currentLike = likeRepo.findByUserAndPost(unLikedUser,unLikedPost).orElseThrow(()-> new ResourceNotFoundException("Like","Unli" +
                 "ked User / Unliked Post",unLikedPost.getPostId(),errorCode));
         likeRepo.delete(currentLike);
+        ModelMapper modelMapper1 = new ModelMapper();
+        return modelMapper1.map(currentLike, LikeDTO.class);
     }
 
     public int noOfLikes(int postId){
