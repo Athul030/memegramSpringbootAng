@@ -1,12 +1,13 @@
 package com.athul.memegramspring.service;
 
 
+import com.athul.memegramspring.dto.UserDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface AdminService {
 
-    void blockUser(int userId);
+    UserDTO blockUser(int userId);
 
-    void unBlockUser(int userId);
+    UserDTO unBlockUser(int userId);
 
 }

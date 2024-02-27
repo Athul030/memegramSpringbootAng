@@ -2,6 +2,7 @@ package com.athul.memegramspring.controller;
 
 
 
+import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,14 +21,14 @@ public class AdminController {
 
 
     @PatchMapping("/blockUser/{userId}")
-    public ResponseEntity<?> blockUserByAdmin(@PathVariable Integer userId){
-        adminService.blockUser(userId);
-        return new ResponseEntity<>("User successfully blocked", HttpStatus.OK);
+    public ResponseEntity<UserDTO> blockUserByAdmin(@PathVariable Integer userId){
+        UserDTO userDTO = adminService.blockUser(userId);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PatchMapping("/unBlockUser/{userId}")
-    public ResponseEntity<?> unBlockUserByAdmin(@PathVariable Integer userId){
-        adminService.unBlockUser(userId);
-        return new ResponseEntity<>("User successfully unblocked", HttpStatus.OK);
+    public ResponseEntity<UserDTO> unBlockUserByAdmin(@PathVariable Integer userId){
+        UserDTO userDTO = adminService.unBlockUser(userId);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 }
