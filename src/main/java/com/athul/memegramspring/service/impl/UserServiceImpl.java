@@ -20,10 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -154,7 +151,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO saveUserDTOFromOAuth(String username) {
+    public UserDTO saveUserDTOFromOAuth(String username, String profilePicUrl) {
         User user =new User();
         user.setEmail(username);
 
@@ -163,7 +160,8 @@ public class UserServiceImpl implements UserService {
         user.setUserHandle(userHandle);
         user.setFullName(userHandle);
         user.setProvider(Provider.GOOGLE);
-        user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
+        user.setProfilePicUrl(profilePicUrl);
+//        user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
         //2 is ROLE_USER
         Role role = roleRepo.findById(2).get();
         user.getRoles().add(role);
@@ -205,7 +203,11 @@ public class UserServiceImpl implements UserService {
 
 
 
-        Set<UserDTO> blockedIds = user.getBlockedUsers().stream().map(blockedUser->modelMapper.map(blockedUser, UserDTO.class)).collect(Collectors.toSet());
+        Set<UserDTO> blockedIds = Optional.ofNullable(user.getBlockedUsers())
+                .orElse(Collections.emptySet())
+                .stream()
+                .map(blockedUser -> modelMapper.map(blockedUser, UserDTO.class))
+                .collect(Collectors.toSet());
         userDTO.setBlockedUsers(blockedIds);
         userDTO.setBlocked(user.isBlocked());
         userDTO.setProvider(user.getProvider());

@@ -98,10 +98,11 @@ public class AuthController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "500")
     })
-    public JwtAuthResponse refreshTokenMethod(@RequestBody RefreshTokenRequest refreshTokenDTO){
-        String extractRefreshToken = refreshTokenDTO.getRefreshToken();
+    public ResponseEntity<JwtAuthResponse> refreshTokenMethod(@RequestBody RefreshTokenRequest refreshToken){
+        String extractRefreshToken = refreshToken.getRefreshToken();
 
-        return refreshTokenService.findByToken(extractRefreshToken)
+        JwtAuthResponse jwtAuthResponse1 =
+                refreshTokenService.findByToken(extractRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user->{
@@ -114,6 +115,7 @@ public class AuthController {
                     System.out.println("jwtAuthResponse is" + jwtAuthResponse);
                     return jwtAuthResponse;
                 }).orElseThrow(()->new RuntimeException("Refresh Token is not in DB"));
+        return new ResponseEntity<>(jwtAuthResponse1,HttpStatus.OK);
     }
 
     private Authentication authenticate(String username,String password) throws ApiResponseCustomBlockedUser {

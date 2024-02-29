@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +31,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 
 @RestController
@@ -70,7 +74,6 @@ public class OAuthController {
                 .append("&approval_prompt=force");
         String requestBody = requestBodyBuffer.toString();
 
-//        String requestBody = "code=" + authorizationCode +"&client_id=" + clientId +"&client_secret=" + clientSecret +"&redirect_uri=" + redirectUri +"&grant_type="+"authorization_code"+"&access_type="+"offline"+"&prompt="+"consent"+"&approval_prompt="+"force";
 
         HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -87,17 +90,21 @@ public class OAuthController {
             if(userService.checkUser(username)){
                 userDTO= userService.getUserByUsername(username);
             }else{
-                userDTO = userService.saveUserDTOFromOAuth(username);
+                String profilePictureUrl = this.getProfilePictureURLFromIdToken(accessTokenResponse);
+                userDTO = userService.saveUserDTOFromOAuth(username,profilePictureUrl);
             }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             String token = jwtHelper.generateToken(userDetails);
             JwtAuthResponse response = new JwtAuthResponse();
+            response.setUsername(username);
             response.setAccessToken(token);
             response.setUser(userDTO);
 
-            String callbackUrl = "http://localhost:8080/callback";
+            ObjectMapper mapper = new ObjectMapper();
+
+            String callbackUrl = "http://localhost:4200/callback?response=" + encodeURIComponent(mapper.writeValueAsString(response));
             httpServletResponse.sendRedirect(callbackUrl);
 
             return new ResponseEntity<>(response,HttpStatus.OK);
@@ -111,6 +118,21 @@ public class OAuthController {
     private String getEmailAddressFromTokenResponse(String accessTokenResponse) throws IOException, InterruptedException {
 
         String tokenInfoEndpoint = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + getTokenIdFromTokenResponse(accessTokenResponse);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        java.net.http.HttpRequest httpGet = java.net.http.HttpRequest.newBuilder().uri(URI.create(tokenInfoEndpoint)).build();
+        HttpResponse<String> response = httpClient.send(httpGet, HttpResponse.BodyHandlers.ofString());
+        // Parse the JSON response
+        String responseJson = response.body();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseJson);
+        System.out.println(jsonNode);
+        String email = jsonNode.get("email").asText();
+        return email;
+    }
+
+    private String getProfilePictureURLFromIdToken(String accessTokenResponse) throws IOException, InterruptedException {
+
+        String tokenInfoEndpoint = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + getTokenIdFromTokenResponse(accessTokenResponse);
 
         HttpClient httpClient = HttpClient.newHttpClient();
         java.net.http.HttpRequest httpGet = java.net.http.HttpRequest.newBuilder().uri(URI.create(tokenInfoEndpoint)).build();
@@ -122,19 +144,16 @@ public class OAuthController {
         String responseJson = response.body();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseJson);
-        System.out.println(jsonNode);
         // Extract email from the response
-        String email = jsonNode.get("email").asText();
-        System.out.println("Email: " + email);
+        String profilePicture = jsonNode.get("picture").asText();
 
-        return email;
+        return profilePicture;
     }
 
     private String getAccessTokenFromTokenResponse(String accessTokenResponse) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(accessTokenResponse);
         String accessToken = jsonNode.get("access_token").asText();
-        System.out.println("access Token"+accessToken);
 
         return accessToken;
     }
@@ -143,11 +162,16 @@ public class OAuthController {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(accessTokenResponse);
         String idToken = jsonNode.get("id_token").asText();
-        System.out.println("id token"+idToken);
 
         return idToken;
     }
 
-
+    private String encodeURIComponent(String parameter){
+        try{
+            return URLEncoder.encode(parameter, StandardCharsets.UTF_8.toString());
+        }catch (UnsupportedEncodingException e){
+            throw new RuntimeException("Error encoding params",e);
+        }
+    }
 
 }

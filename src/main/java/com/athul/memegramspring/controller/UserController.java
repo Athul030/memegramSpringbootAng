@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -136,19 +137,19 @@ public class UserController {
 
     //block another user
     @PostMapping("/userBlock")
-    public ResponseEntity<?> blockAUser(@RequestBody UserBlockRequest userBlockRequest){
+    public ResponseEntity<UserDTO> blockAUser(@RequestBody UserBlockRequest userBlockRequest){
 
         UserDTO userDTO = userService.blockAUser(userBlockRequest);
-        return new ResponseEntity<>("User Successfully Blocked",HttpStatus.OK);
+        return new ResponseEntity<>(userDTO,HttpStatus.OK);
 
     }
 
     //un block another user
     @PostMapping("/userUnBlock")
-    public ResponseEntity<?> unBlockAUser(@RequestBody UserBlockRequest userBlockRequest){
+    public ResponseEntity<UserDTO> unBlockAUser(@RequestBody UserBlockRequest userBlockRequest){
 
         UserDTO userDTO = userService.unBlockAUser(userBlockRequest);
-        return new ResponseEntity<>("User Successfully Un Blocked",HttpStatus.OK);
+        return new ResponseEntity<>(userDTO,HttpStatus.OK);
 
     }
 }

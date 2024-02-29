@@ -2,6 +2,7 @@ package com.athul.memegramspring.entity;
 
 import com.athul.memegramspring.enums.PostType;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.List;
 @Table(name="post")
 @Getter
 @Setter
+@Data
 @NoArgsConstructor
 public class Post {
 

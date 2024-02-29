@@ -30,7 +30,7 @@ public interface UserService {
 
     void deleteUser(Integer userId);
 
-    UserDTO saveUserDTOFromOAuth(String username);
+    UserDTO saveUserDTOFromOAuth(String username, String profilePicUrl);
 
     void changeProfilePic(String username, String fileName);
 
