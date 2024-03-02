@@ -212,6 +212,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setBlocked(user.isBlocked());
         userDTO.setProvider(user.getProvider());
         userDTO.setProfilePicUrl(user.getProfilePicUrl());
+        userDTO.setUserPresence(user.isUserPresence());
         return userDTO;
 
     }

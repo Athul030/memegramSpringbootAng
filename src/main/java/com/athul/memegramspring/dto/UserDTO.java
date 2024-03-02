@@ -44,4 +44,7 @@ public class UserDTO {
     private List<FollowingDTO> following;
 
     private Set<UserDTO> blockedUsers = new HashSet<>();
+
+    private boolean userPresence;
+
 }

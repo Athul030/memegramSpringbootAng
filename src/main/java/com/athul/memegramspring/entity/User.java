@@ -49,6 +49,9 @@ public class User implements UserDetails {
 
     private String profilePicUrl;
 
+    private boolean userPresence;
+
+
     @Column(name = "is_blocked")
     private boolean isBlocked;
     @Override

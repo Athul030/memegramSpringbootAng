@@ -88,7 +88,9 @@ public class SecurityConfig  {
                         .requestMatchers("/src/main/resources/static/images/**").permitAll()
                         .requestMatchers("/static/images/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
-                        .requestMatchers("/chat-socket/**").permitAll()
+                        .requestMatchers("/socket").permitAll() //for websocket
+                        .requestMatchers("/ws").permitAll() //for websocket
+                        .requestMatchers("/app/**").permitAll()
                         .requestMatchers("/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/test").permitAll()

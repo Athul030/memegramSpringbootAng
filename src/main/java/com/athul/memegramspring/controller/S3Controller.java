@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/files")
 @RequiredArgsConstructor
-public class S3Controller {
+public class  S3Controller {
 
     private final S3FileUploadService s3FileUploadService;
     private final UserService userService;
