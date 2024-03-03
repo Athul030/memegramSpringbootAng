@@ -73,7 +73,7 @@ public class SocketController {
     //user presence : handle later
 
     @PostMapping("/userPresence/{userId}/{status}")
-    public ResponseEntity<Void> updateUserPresence(@PathVariable String userId,@PathVariable boolean status){
+    public ResponseEntity<Void> updateUserPresence(@PathVariable int userId,@PathVariable boolean status){
         chatService.updateUserPresence(userId,status);
         return ResponseEntity.ok().build();
     }

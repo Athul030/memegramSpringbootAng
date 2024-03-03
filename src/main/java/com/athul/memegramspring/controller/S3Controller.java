@@ -36,5 +36,14 @@ public class  S3Controller {
         response.put("fileUrl", fileName);
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String,String>> uploadFileForChat(
+            @RequestPart(name="file",required = true)MultipartFile file , @AuthenticationPrincipal UserDetails userDetails) throws FileNotFoundException {
+        String fileName = s3FileUploadService.uploadFileToS3(file).get("fileUrl");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("fileUrl", fileName);
+        return ResponseEntity.ok(response);
+    }
 
 }

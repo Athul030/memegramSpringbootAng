@@ -55,13 +55,11 @@ public class ChatServiceImpl implements ChatService {
     public MessageDTO saveMessage(Message message) {
         message.setTime(Instant.now());
         message.setIsRead(false);
-        if(message.getMessageType()!= MessageType.TEXT){
-            //to upload image
-        }
         Message message1 =messageRepo.save(message);
         System.out.println(message1);
         ModelMapper modelMapper = new ModelMapper();
-        MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+        //changed below from message to message1 , check it if error comes
+        MessageDTO messageDTO = modelMapper.map(message1, MessageDTO.class);
         return  messageDTO;
     }
 
@@ -76,10 +74,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void updateUserPresence(String userId, boolean status) {
+    public void updateUserPresence(int userId, boolean status) {
         String errorCode = "ChatServiceImpl:updateUserPresence()";
-        System.out.println(Integer.valueOf(userId)+"check the userId convention, delete after checking once inside UpdateUserPresence in chat service Implementation");
-        User user = userRepo.findById(Integer.valueOf(userId)).orElseThrow(()->new ResourceNotFoundException("User","Id",userId,errorCode));
+        User user = userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","Id",userId,errorCode));
         user.setUserPresence(status);
         userRepo.save(user);
         ;

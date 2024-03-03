@@ -17,6 +17,6 @@ public interface ChatService {
 
     List<MessageDTO> getChatHistory(String roomId);
 
-    void updateUserPresence(String userId,boolean status);
+    void updateUserPresence(int userId,boolean status);
 
 }
