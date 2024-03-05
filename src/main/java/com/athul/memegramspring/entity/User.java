@@ -51,6 +51,7 @@ public class User implements UserDetails {
 
     private boolean userPresence;
 
+    private int reportedCount;
 
     @Column(name = "is_blocked")
     private boolean isBlocked;

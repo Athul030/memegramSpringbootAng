@@ -5,7 +5,9 @@ import com.athul.memegramspring.entity.Comment;
 import com.athul.memegramspring.entity.Like;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.PostType;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +20,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@JsonIgnoreProperties({"comments"})  // Add this annotation to ignore the "comments" property during serialization
+//@JsonIgnoreProperties({"comments"})  // Add this annotation to ignore the "comments" property during serialization
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "postId")
 
 @NoArgsConstructor
 public class PostDTO {

@@ -145,9 +145,13 @@ public class PostServiceImpl implements PostService {
         List<PostDTO> postsDtosUser = posts.stream().map(post -> {
             PostDTO postDTO = modelMapper2.map(post, PostDTO.class);
             List<LikeDTO> likeDTOS = post.getLikes().stream().map(like -> modelMapper2.map(like, LikeDTO.class)).collect(Collectors.toList());
+            List<CommentDTO> commentDTOS = post.getComments().stream().map(comment -> modelMapper2.map(comment, CommentDTO.class)).collect(Collectors.toList());
             postDTO.setLikes(likeDTOS);
+            postDTO.setComments(commentDTOS);
             return postDTO;
         }).collect(Collectors.toList());
+
+
 
      String baseUrl = "http://localhost:8080/";
         postsDtosUser.stream().forEach(postDTO -> {
@@ -163,6 +167,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public int numberOfPostByAUser(String username) {
         return postRepo.countOfPostByUser(username);
+    }
+
+    @Override
+    public int numberOfPostByOtherUser(Integer userId) {
+        String errorCode = "PostServiceImpl:numberOfPostByAUser()";
+        User foundedUser=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","Id",userId,errorCode));
+        return postRepo.countOfPostByUser(foundedUser.getUsername());
     }
 
     private UserDTO userToDTO(User user){

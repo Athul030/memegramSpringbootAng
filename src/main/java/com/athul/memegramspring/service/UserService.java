@@ -42,4 +42,6 @@ public interface UserService {
 
     FollowDTO followToDTO(Follow follow);
 
+    boolean reportUser(int reportingUserId,int reportedUserId, String reason);
+
 }

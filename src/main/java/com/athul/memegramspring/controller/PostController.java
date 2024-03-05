@@ -114,6 +114,20 @@ public class  PostController {
 
     }
 
+    //get posts of other user
+    @GetMapping("/user/posts/{userId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404",description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<List<PostDTO>> getPostsByOtherUser(@PathVariable Integer userId){
+        List<PostDTO> postsByUser = postService.getPostsByUser(userId);
+        return new ResponseEntity<List<PostDTO>>(postsByUser,HttpStatus.OK);
+
+    }
+
 
     //get by category
     @GetMapping("/category/{categoryId}/posts")
@@ -243,6 +257,12 @@ public class  PostController {
     ResponseEntity<Integer> postCountOfUser(Authentication authentication){
         String username = authentication.getName();
         int count = postService.numberOfPostByAUser(username);
+        return new ResponseEntity<>(count,HttpStatus.OK);
+    }
+
+    @GetMapping("/postCountOfUser/{userId}")
+    ResponseEntity<Integer> postCountOfUser(@PathVariable Integer userId){
+        int count = postService.numberOfPostByOtherUser(userId);
         return new ResponseEntity<>(count,HttpStatus.OK);
     }
 }

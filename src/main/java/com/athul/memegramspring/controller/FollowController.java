@@ -44,4 +44,12 @@ public class FollowController {
         FollowerFollowingDetails followerFollowingDetails = followService.getDetailsOfFollowersAndFollowing(userService.findUserIdFromUsername(authentication.getName()));
         return new ResponseEntity<>(followerFollowingDetails,HttpStatus.OK);
     }
+
+    //for other profile visit user
+    @GetMapping("/followerAndFollowingDetails/{userId}")
+    ResponseEntity<FollowerFollowingDetails> followersAndFollowingDetailsForOtherUser(@PathVariable Integer userId){
+
+        FollowerFollowingDetails followerFollowingDetails = followService.getDetailsOfFollowersAndFollowing(userId);
+        return new ResponseEntity<>(followerFollowingDetails,HttpStatus.OK);
+    }
 }

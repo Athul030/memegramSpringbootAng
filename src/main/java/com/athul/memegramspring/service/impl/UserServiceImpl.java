@@ -2,11 +2,13 @@ package com.athul.memegramspring.service.impl;
 
 import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.Follow;
+import com.athul.memegramspring.entity.Reports;
 import com.athul.memegramspring.entity.Role;
 import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.FollowRepo;
+import com.athul.memegramspring.repository.ReportsRepo;
 import com.athul.memegramspring.repository.RoleRepo;
 import com.athul.memegramspring.repository.UserRepo;
 import com.athul.memegramspring.service.UserService;
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
     private final FollowRepo followRepo;
+    private final ReportsRepo reportsRepo;
 
 
     @Override
@@ -283,6 +286,20 @@ public class UserServiceImpl implements UserService {
 
         return followDTO;
 
+    }
+
+    @Override
+    public boolean reportUser(int reportingUserId, int reportedUserId, String reason) {
+        String errorCode = "UserServiceImpl:reportUser()";
+        User reportingUser = userRepo.findById(reportingUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportingUserId,errorCode));
+        User reportedUser = userRepo.findById(reportedUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportedUserId,errorCode));
+        Reports report= new Reports();
+        report.setReportingUser(reportingUser);
+        report.setReportedUser(reportedUser);
+        report.setReportingReason(reason);
+        reportsRepo.save(report);
+        reportedUser.setReportedCount(reportedUser.getReportedCount()+1);
+        return true;
     }
 
 

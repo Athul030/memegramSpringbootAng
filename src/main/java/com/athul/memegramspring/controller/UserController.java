@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -114,7 +115,11 @@ public class UserController {
     }
 
 
+
+
 //    @PreAuthorize("hasRole('ADMIN')")
+    //front end receives other user from path variable for profile visits
+
     @GetMapping("/{userId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok"),
@@ -151,5 +156,15 @@ public class UserController {
         UserDTO userDTO = userService.unBlockAUser(userBlockRequest);
         return new ResponseEntity<>(userDTO,HttpStatus.OK);
 
+    }
+    
+    
+    //report user
+    @PostMapping("/reportUser/{userId}")
+    public ResponseEntity<Boolean> reportUser(@PathVariable int userId, Authentication authentication,@RequestBody String reason){
+        int mainUserId = userService.findUserIdFromUsername(authentication.getName());
+
+        Boolean result  = userService.reportUser(mainUserId,userId,reason);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

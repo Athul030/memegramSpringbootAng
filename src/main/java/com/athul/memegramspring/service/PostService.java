@@ -31,4 +31,5 @@ public interface PostService {
 
     int numberOfPostByAUser(String username);
 
+    int numberOfPostByOtherUser(Integer userId);
 }
