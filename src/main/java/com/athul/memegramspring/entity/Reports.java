@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints= {@UniqueConstraint(columnNames = {"reported_user_id","reporting_user_id","reported_post_post_id"})})
 public class Reports {
 
     @Id
@@ -22,5 +23,7 @@ public class Reports {
 
     private String reportingReason;
 
+    @ManyToOne
+    private Post reportedPost;
 
 }

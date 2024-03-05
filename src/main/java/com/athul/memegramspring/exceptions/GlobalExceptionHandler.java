@@ -65,13 +65,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiResponseCustomBlockedUser.class)
     public ResponseEntity<Object>  handleBlockedUserException(ApiResponseCustomBlockedUser ex){
-        return new ResponseEntity<>("You are blocked from accessing Memegram",HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("You are blocked from accessing Memegram",HttpStatus.LOCKED);
     }
 
     @ExceptionHandler(PermissionDeniedException.class)
     public ResponseEntity<String> handlePermissionDeniedException(PermissionDeniedException ex){
         return new ResponseEntity<>("You don't have permission to delete this comment",HttpStatus.FORBIDDEN);
     }
+
+
 
 
 

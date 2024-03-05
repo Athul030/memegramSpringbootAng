@@ -160,11 +160,11 @@ public class UserController {
     
     
     //report user
-    @PostMapping("/reportUser/{userId}")
-    public ResponseEntity<Boolean> reportUser(@PathVariable int userId, Authentication authentication,@RequestBody String reason){
+    @PostMapping("/reportUser/{postId}/{userId}")
+    public ResponseEntity<Boolean> reportUser(@PathVariable int userId,@PathVariable int postId, Authentication authentication,@RequestBody String reason){
         int mainUserId = userService.findUserIdFromUsername(authentication.getName());
 
-        Boolean result  = userService.reportUser(mainUserId,userId,reason);
+        Boolean result  = userService.reportUser(mainUserId,userId,reason,postId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

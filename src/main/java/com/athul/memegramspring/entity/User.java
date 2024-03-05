@@ -51,6 +51,7 @@ public class User implements UserDetails {
 
     private boolean userPresence;
 
+    @Column(name = "reported_count", nullable = false, columnDefinition = "integer default 0")
     private int reportedCount;
 
     @Column(name = "is_blocked")

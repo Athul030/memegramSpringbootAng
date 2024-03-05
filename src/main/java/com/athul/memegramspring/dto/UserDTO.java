@@ -47,4 +47,7 @@ public class UserDTO {
 
     private boolean userPresence;
 
+    private int reportedCount;
+
+
 }

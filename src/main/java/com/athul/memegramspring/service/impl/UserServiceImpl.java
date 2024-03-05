@@ -1,16 +1,10 @@
 package com.athul.memegramspring.service.impl;
 
 import com.athul.memegramspring.dto.*;
-import com.athul.memegramspring.entity.Follow;
-import com.athul.memegramspring.entity.Reports;
-import com.athul.memegramspring.entity.Role;
-import com.athul.memegramspring.entity.User;
+import com.athul.memegramspring.entity.*;
 import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
-import com.athul.memegramspring.repository.FollowRepo;
-import com.athul.memegramspring.repository.ReportsRepo;
-import com.athul.memegramspring.repository.RoleRepo;
-import com.athul.memegramspring.repository.UserRepo;
+import com.athul.memegramspring.repository.*;
 import com.athul.memegramspring.service.UserService;
 import com.athul.memegramspring.utils.UserBlockRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepo roleRepo;
     private final FollowRepo followRepo;
     private final ReportsRepo reportsRepo;
+    private final PostRepo postRepo;
 
 
     @Override
@@ -113,6 +108,19 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepo.findByEmail(username);
         return userOptional.isPresent();
     }
+
+    @Override
+    public boolean checkOAuthUserBlocked(String username) {
+        String errorCode = "UserServiceImpl:checkOAuthUserBlocked()";
+        if(!checkUser(username)){
+            return false;
+        }else{
+            User foundedUser=userRepo.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User","Id",username,errorCode));
+            return foundedUser.isBlocked();
+        }
+
+    }
+
 
     @Override
     public UserDTO getUserByUsername(String username) {
@@ -216,6 +224,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setProvider(user.getProvider());
         userDTO.setProfilePicUrl(user.getProfilePicUrl());
         userDTO.setUserPresence(user.isUserPresence());
+        userDTO.setReportedCount(user.getReportedCount());
         return userDTO;
 
     }
@@ -289,16 +298,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean reportUser(int reportingUserId, int reportedUserId, String reason) {
+    public boolean reportUser(int reportingUserId, int reportedUserId, String reason,int postId) {
         String errorCode = "UserServiceImpl:reportUser()";
         User reportingUser = userRepo.findById(reportingUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportingUserId,errorCode));
         User reportedUser = userRepo.findById(reportedUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportedUserId,errorCode));
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
         Reports report= new Reports();
         report.setReportingUser(reportingUser);
         report.setReportedUser(reportedUser);
         report.setReportingReason(reason);
+        report.setReportedPost(post);
         reportsRepo.save(report);
         reportedUser.setReportedCount(reportedUser.getReportedCount()+1);
+        userRepo.save(reportedUser);
+        post.setReportedCount(post.getReportedCount()+1);
+        postRepo.save(post);
         return true;
     }
 

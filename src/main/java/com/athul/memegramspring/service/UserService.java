@@ -22,6 +22,8 @@ public interface UserService {
 
     boolean checkUser(String username);
 
+    boolean checkOAuthUserBlocked(String username);
+
     UserDTO getUserByUsername(String username);
 
     List<UserDTO> getAllUsers();
@@ -42,6 +44,6 @@ public interface UserService {
 
     FollowDTO followToDTO(Follow follow);
 
-    boolean reportUser(int reportingUserId,int reportedUserId, String reason);
+    boolean reportUser(int reportingUserId,int reportedUserId, String reason, int postId);
 
 }

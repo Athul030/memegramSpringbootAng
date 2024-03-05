@@ -52,4 +52,6 @@ public class PostDTO {
 
     private CommentDTO lastComment;
 
+    private int reportedCount;
+
 }

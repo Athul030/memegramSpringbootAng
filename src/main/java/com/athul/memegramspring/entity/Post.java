@@ -45,4 +45,8 @@ public class Post {
 
     private String imageUrl;
 
+    @Column(name = "reported_count", nullable = false, columnDefinition = "integer default 0")
+    private int reportedCount;
+
+
 }

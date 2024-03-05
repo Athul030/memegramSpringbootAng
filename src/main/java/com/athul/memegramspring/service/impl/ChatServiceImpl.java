@@ -36,9 +36,9 @@ public class ChatServiceImpl implements ChatService {
         List<Integer> participantUserIds = chatRoom.getParticipantUserIds();
         Collections.sort(participantUserIds);
         ChatRoom existingChatRoom = chatRoomRepo.findByParticipantUserIds(participantUserIds);
-        existingChatRoom.setMessages(messageRepo.findByChatIdOrderByTimeDesc(existingChatRoom.getId()).orElseThrow(()->new ResourceNotFoundException("Chat Room","chat room Id",existingChatRoom.getId(),errorCode)));
         ModelMapper modelMapper = new ModelMapper();
         if (existingChatRoom !=null){
+            existingChatRoom.setMessages(messageRepo.findByChatIdOrderByTimeDesc(existingChatRoom.getId()).orElseThrow(()->new ResourceNotFoundException("Chat Room","chat room Id",existingChatRoom.getId(),errorCode)));
             ChatRoomDTO chatRoomDTO = modelMapper.map(existingChatRoom,ChatRoomDTO.class);
             if(existingChatRoom.getMessages()!=null) {
                     chatRoomDTO.setMessages(existingChatRoom.getMessages().stream().map(x -> modelMapper.map(x, MessageDTO.class)).collect(Collectors.toList()));

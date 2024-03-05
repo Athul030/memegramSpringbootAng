@@ -1,6 +1,7 @@
 package com.athul.memegramspring.controller;
 
 import com.athul.memegramspring.dto.UserDTO;
+import com.athul.memegramspring.exceptions.ApiResponseCustomBlockedUser;
 import com.athul.memegramspring.security.JwtAuthRequest;
 import com.athul.memegramspring.security.JwtAuthResponse;
 import com.athul.memegramspring.security.JwtHelper;
@@ -85,6 +86,9 @@ public class OAuthController {
             String accessTokenResponse = responseEntity.getBody();
             System.out.println("Access token is"+ accessTokenResponse);
             String username = getEmailAddressFromTokenResponse(accessTokenResponse);
+            if(userService.checkOAuthUserBlocked(username)){
+                throw new ApiResponseCustomBlockedUser("You are blocked from using Memegram",HttpStatus.LOCKED, "423");
+            }
             //split
             UserDTO userDTO = null;
             if(userService.checkUser(username)){

@@ -126,7 +126,7 @@ public class AuthController {
             return authentication;
 
         }catch (BadCredentialsException e){
-            if(userService.getUserByUsername(username).isBlocked()==true)   throw new ApiResponseCustomBlockedUser("You are blocked from using Memegram",HttpStatus.UNAUTHORIZED, "401");
+            if(userService.getUserByUsername(username).isBlocked()==true)   throw new ApiResponseCustomBlockedUser("You are blocked from using Memegram",HttpStatus.LOCKED, "423");
             else throw new ApiException("Invalid username or password");
         }
     }
