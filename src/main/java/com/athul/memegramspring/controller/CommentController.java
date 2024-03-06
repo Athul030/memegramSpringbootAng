@@ -25,10 +25,10 @@ public class CommentController {
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/deleteComment")
-    ApiResponseCustom follow(@RequestBody CommentDTO commentDTO, Authentication authentication){
+    @DeleteMapping("/deleteComment/{commentId}")
+    ApiResponseCustom follow(@PathVariable int commentId, Authentication authentication){
 
-        commentService.deleteComment(commentDTO.getCommentId(),authentication.getName());
+        commentService.deleteComment(commentId,authentication.getName());
         return new ApiResponseCustom("Comment is successfully deleted",HttpStatus.OK);
     }
 
