@@ -255,8 +255,19 @@ public class UserServiceImpl implements UserService {
         User blockedUser = userRepo.findById(userBlockRequest.getBlockedUserId()).orElseThrow(()-> new ResourceNotFoundException("User","Id", userBlockRequest.getBlockedUserId(),errorCode));
         blockingUser.getBlockedUsers().add(blockedUser);
         User user = userRepo.save(blockingUser);
+        removeFollowConnections(blockingUser,blockedUser);
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         return userDTO;
+
+    }
+
+    private void removeFollowConnections(User blockingUser,User blockedUser){
+        if(followRepo.findFollowConnection(blockingUser,blockedUser).isPresent()){
+            followRepo.delete(followRepo.findFollowConnection(blockingUser,blockedUser).get());
+        }
+        if(followRepo.findFollowConnection(blockedUser,blockingUser).isPresent()){
+            followRepo.delete(followRepo.findFollowConnection(blockedUser,blockingUser).get());
+        }
 
     }
 

@@ -108,6 +108,7 @@ public class AuthController {
                 .map(user->{
                     String accessToken= jwtHelper.generateToken(userDetailsService.loadUserByUsername(user.getEmail()));
                     JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+                    System.out.println("New access token is "+accessToken);
                     jwtAuthResponse.setAccessToken(accessToken);
                     jwtAuthResponse.setUsername(user.getUsername());
                     jwtAuthResponse.setRefreshToken(extractRefreshToken);
