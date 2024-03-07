@@ -46,6 +46,9 @@ public class  PostController {
     @Value("${project.image}")
     private String path;
 
+    @Value("${project.imageTarget")
+    private String altPath;
+
     //create a post
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     @ApiResponses(value = {
