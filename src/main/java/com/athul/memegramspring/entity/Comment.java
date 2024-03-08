@@ -28,4 +28,6 @@ public class Comment {
     @JoinColumn(name = "postId")
     private Post post;
 
+    private LocalDateTime editedDate;
+
 }

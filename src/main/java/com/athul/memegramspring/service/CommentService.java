@@ -12,4 +12,6 @@ public interface CommentService {
     void deleteComment(int commentId, String loggedInUserName);
 
     List<CommentDTO> getAllComments(int postId);
+
+    CommentDTO editComment(int commentId, String loggedInUserName, String editedText);
 }

@@ -2,6 +2,7 @@ package com.athul.memegramspring.controller;
 
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.RefreshToken;
+import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.exceptions.ApiException;
 import com.athul.memegramspring.exceptions.ApiResponseCustomBlockedUser;
 import com.athul.memegramspring.repository.RefreshTokenRepo;
@@ -27,6 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -67,6 +69,7 @@ public class AuthController {
             response.setAccessToken(accessToken);
             response.setRefreshToken(refreshToken.getToken());
             response.setUsername(userDetails.getUsername());
+            userService.setUserPresence(request.getUsername());
             response.setUser(userService.getUserByUsername(userDetails.getUsername()));
             System.out.println("resInAuthController"+response);
             return new ResponseEntity<>(response,HttpStatus.OK);
@@ -141,6 +144,27 @@ public class AuthController {
 //            throw new ApiException("Invalid username or password");
 //        }
 //    }
+
+    @PostMapping("/logout")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "500")
+    })
+    public void logout(){
+        SecurityContextHolder.getContext();
+        SecurityContextHolder.getContext().toString();
+        SecurityContextHolder.clearContext();
+    }
+
+    @PostMapping("/removeUserPresence/{userId}")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "500")
+    })
+    public void removeUserPresence(@PathVariable int userId){
+        userService.removeUserPresence(userId);
+    }
+
 
 
 

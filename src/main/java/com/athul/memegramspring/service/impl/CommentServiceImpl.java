@@ -71,4 +71,20 @@ public class CommentServiceImpl implements CommentService {
         List<CommentDTO> commentDTOS = comment.stream().map(x->modelMapper.map(x, CommentDTO.class)).collect(Collectors.toList());
         return commentDTOS;
     }
+
+    @Override
+    public CommentDTO editComment(int commentId, String loggedInUserName, String editedText) {
+        String errorCode = "CommentServiceImpl:editComment()";
+        Comment comment = commentRepo.findById(commentId).orElseThrow(()->new ResourceNotFoundException("Comment","Id",commentId,errorCode));
+        if(!comment.getUser().getEmail().equals(loggedInUserName)){
+            throw new PermissionDeniedException("User doesn't have permission to delete this comment");
+        }else {
+            comment.setCommentText(editedText);
+            comment.setEditedDate(LocalDateTime.now());
+            Comment comment1 = commentRepo.save(comment);
+            ModelMapper modelMapper = new ModelMapper();
+            CommentDTO commentDTO  = modelMapper.map(comment1, CommentDTO.class);
+            return commentDTO;
+        }
+    }
 }

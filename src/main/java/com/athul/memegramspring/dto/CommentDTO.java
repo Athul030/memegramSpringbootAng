@@ -20,7 +20,7 @@ public class CommentDTO {
     private Integer commentId;
     private String commentText;
     private LocalDateTime commentedDate;
-
+    private LocalDateTime editedDate;
     private UserDTO user;
 
     private PostDTO post;

@@ -37,4 +37,12 @@ public class CommentController {
         List<CommentDTO> commentDTOS = commentService.getAllComments(postId);
         return new ResponseEntity<>(commentDTOS,HttpStatus.OK);
     }
+
+    //edit comment
+    @PatchMapping("/editComment/{commentId}")
+    ResponseEntity<CommentDTO> editComment(@PathVariable int commentId, Authentication authentication, @RequestBody AddCommentRequest addCommentRequest){
+        String editedText  = addCommentRequest.getCommentText();
+        CommentDTO commentDTO = commentService.editComment(commentId,authentication.getName(),editedText);
+        return new ResponseEntity<>(commentDTO,HttpStatus.OK);
+    }
 }

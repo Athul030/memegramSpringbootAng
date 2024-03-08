@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.athul.memegramspring.security.JWTAuthenticationFilter;
 import com.athul.memegramspring.security.JwtAuthenticationEntryPoint;
+import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,6 +67,7 @@ public class SecurityConfig  {
     private  final UserDetailsService userDetailsService;
     private final CustomCors customCors;
     private final CustomOAuth2UserService oAuth2UserService;
+    private final UserService userService;
 //    private final CustomAccessDeniedHandlerImpl customAccessDeniedHandler;
 
 
@@ -96,7 +98,13 @@ public class SecurityConfig  {
                         .requestMatchers("/api/user/test").permitAll()
                         .anyRequest().authenticated())
                 .logout((logout)->logout.logoutUrl("/api/v1/auth/logout")
-                        .logoutSuccessUrl("/login"))
+                        .logoutSuccessHandler(((request, response, authentication) -> {
+                            System.out.println("logout is successful");
+                        }))
+                        .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                )
                 .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                         .oauth2Login((login)->login.redirectionEndpoint((endpoint)->
                                 endpoint.baseUri("/login/oauth2/authorization"))

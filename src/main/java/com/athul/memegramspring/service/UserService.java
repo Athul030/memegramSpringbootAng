@@ -46,4 +46,7 @@ public interface UserService {
 
     boolean reportUser(int reportingUserId,int reportedUserId, String reason, int postId);
 
+    void setUserPresence(String username);
+    void removeUserPresence(int userId);
+
 }

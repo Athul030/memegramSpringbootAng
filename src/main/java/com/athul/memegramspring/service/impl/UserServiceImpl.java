@@ -327,5 +327,23 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public void setUserPresence(String username) {
+        String errorCode = "UserServiceImpl:setUserPresence()";
+
+        User user = userRepo.findByEmail(username).orElseThrow(()-> new ResourceNotFoundException("User", "username", username,errorCode));;
+        user.setUserPresence(true);
+        userRepo.save(user);
+    }
+
+    @Override
+    public void removeUserPresence(int userId) {
+        String errorCode = "UserServiceImpl:removeUserPresence()";
+
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", userId,errorCode));;
+        user.setUserPresence(false);
+        userRepo.save(user);
+    }
+
 
 }
