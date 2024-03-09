@@ -151,7 +151,7 @@ public class PostServiceImpl implements PostService {
             return postDTO;
         }).collect(Collectors.toList());
 
-
+        System.out.println(postsDtosUser);
 
      String baseUrl = "http://localhost:8080/";
         postsDtosUser.stream().forEach(postDTO -> {
@@ -213,8 +213,8 @@ public class PostServiceImpl implements PostService {
         List<LikeDTO> likeDTOS = post.getLikes().stream().map(x->{
 
             LikeDTO likeDTO = new LikeDTO();
-            likeDTO.setPostDTO(modelMapper1.map(x.getPost(), PostDTO.class));
-            likeDTO.setUserDTO(modelMapper1.map(x.getUser(), UserDTO.class));
+            likeDTO.setPost(modelMapper1.map(x.getPost(), PostDTO.class));
+            likeDTO.setUser(modelMapper1.map(x.getUser(), UserDTO.class));
             likeDTO.setLikeId(x.getLikeId());
             likeDTO.setLikedDate(x.getLikedDate());
             return likeDTO;

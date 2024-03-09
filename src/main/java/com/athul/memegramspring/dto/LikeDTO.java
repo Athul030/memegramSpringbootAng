@@ -16,9 +16,9 @@ public class LikeDTO {
 
     private Integer likeId;
 
-    private PostDTO postDTO;
+    private PostDTO post;
 
-    private UserDTO userDTO;
+    private UserDTO user;
 
     private LocalDateTime likedDate;
 

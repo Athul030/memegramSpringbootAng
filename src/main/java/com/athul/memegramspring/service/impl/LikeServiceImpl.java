@@ -40,8 +40,8 @@ public class LikeServiceImpl implements LikeService {
         currentLike.setUser(likedUser);
         ModelMapper modelMapper1 = new ModelMapper();
         LikeDTO likeDTO = modelMapper1.map(likeRepo.save(currentLike),LikeDTO.class);
-        likeDTO.setUserDTO(modelMapper1.map(likedUser, UserDTO.class));
-        likeDTO.setPostDTO(modelMapper1.map(likedPost, PostDTO.class));
+        likeDTO.setUser(modelMapper1.map(likedUser, UserDTO.class));
+        likeDTO.setPost(modelMapper1.map(likedPost, PostDTO.class));
         return likeDTO;
     }
 
@@ -75,8 +75,8 @@ public class LikeServiceImpl implements LikeService {
                 "ked User / Unliked Post",post.getPostId(),errorCode));
         ModelMapper modelMapper2 = new ModelMapper();
         LikeDTO likeDTO = modelMapper2.map(currentLike,LikeDTO.class);
-        likeDTO.setUserDTO(modelMapper2.map(currentUser, UserDTO.class));
-        likeDTO.setPostDTO(modelMapper2.map(post, PostDTO.class));
+        likeDTO.setUser(modelMapper2.map(currentUser, UserDTO.class));
+        likeDTO.setPost(modelMapper2.map(post, PostDTO.class));
         return likeDTO;
     }
 }
