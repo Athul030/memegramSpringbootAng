@@ -49,5 +49,7 @@ public class UserDTO {
 
     private int reportedCount;
 
+    private boolean publicProfile;
+
 
 }

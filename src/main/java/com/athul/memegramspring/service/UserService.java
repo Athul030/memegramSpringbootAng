@@ -49,4 +49,7 @@ public interface UserService {
     void setUserPresence(String username);
     void removeUserPresence(int userId);
 
+    boolean toggleProfileType(boolean publicProfile,String username);
+
+    boolean checkUserPresence(int userId);
 }

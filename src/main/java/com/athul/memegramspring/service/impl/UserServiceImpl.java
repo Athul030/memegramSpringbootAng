@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(role);
         user.setBlocked(false);
         user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
+        user.setPublicProfile(true);
         User savedUser = userRepo.save(user);
         return userToDTO(savedUser);
     }
@@ -177,7 +178,7 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepo.findById(2).get();
         user.getRoles().add(role);
         user.setBlocked(false);
-
+        user.setPublicProfile(true);
         User savedOAuthUser = userRepo.save(user);
         return userToDTO(savedOAuthUser);
     }
@@ -225,6 +226,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setProfilePicUrl(user.getProfilePicUrl());
         userDTO.setUserPresence(user.isUserPresence());
         userDTO.setReportedCount(user.getReportedCount());
+        userDTO.setPublicProfile(user.isPublicProfile());
         return userDTO;
 
     }
@@ -343,6 +345,23 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", userId,errorCode));;
         user.setUserPresence(false);
         userRepo.save(user);
+    }
+
+    @Override
+    public boolean toggleProfileType(boolean publicProfile, String username) {
+        String errorCode = "UserServiceImpl:toggleProfileType()";
+        User user = userRepo.findByEmail(username).orElseThrow(()-> new ResourceNotFoundException("User", "username", username,errorCode));;
+        user.setPublicProfile(publicProfile);
+        User user1 = userRepo.save(user);
+        return user1.isPublicProfile();
+
+    }
+
+    @Override
+    public boolean checkUserPresence(int userId) {
+        String errorCode = "UserServiceImpl:checkUserPresence()";
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", userId,errorCode));;
+        return user.isUserPresence();
     }
 
 

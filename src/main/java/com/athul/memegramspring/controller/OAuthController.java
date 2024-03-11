@@ -104,6 +104,8 @@ public class OAuthController {
             JwtAuthResponse response = new JwtAuthResponse();
             response.setUsername(username);
             response.setAccessToken(token);
+            //set user presence as true
+            userService.setUserPresence(username);
             response.setUser(userDTO);
 
             ObjectMapper mapper = new ObjectMapper();

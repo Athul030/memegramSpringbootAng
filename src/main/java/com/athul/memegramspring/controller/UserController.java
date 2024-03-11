@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.asm.MemberSubstitution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -165,6 +166,18 @@ public class UserController {
         int mainUserId = userService.findUserIdFromUsername(authentication.getName());
 
         Boolean result  = userService.reportUser(mainUserId,userId,reason,postId);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PatchMapping("/toggleProfileType")
+    public ResponseEntity<Boolean> toggleProfileType(@RequestParam boolean publicProfile, Authentication authentication) {
+        boolean result = userService.toggleProfileType(publicProfile,authentication.getName());
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("/userPresenceCheck/{userId}")
+    public ResponseEntity<Boolean> checkUserPresence(@PathVariable int userId){
+        boolean result = userService.checkUserPresence(userId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

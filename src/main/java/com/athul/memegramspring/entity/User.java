@@ -54,6 +54,9 @@ public class User implements UserDetails {
     @Column(name = "reported_count", nullable = false, columnDefinition = "integer default 0")
     private int reportedCount;
 
+    @Column(name = "public_profile")
+    private boolean publicProfile;
+
     @Column(name = "is_blocked")
     private boolean isBlocked;
     @Override
