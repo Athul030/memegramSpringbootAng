@@ -1,9 +1,6 @@
 package com.athul.memegramspring.controller;
 
-import com.athul.memegramspring.dto.ChatRoomDTO;
-import com.athul.memegramspring.dto.MessageDTO;
-import com.athul.memegramspring.dto.PostDTO;
-import com.athul.memegramspring.dto.TypingIndicatorDTO;
+import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.ChatRoom;
 import com.athul.memegramspring.entity.ChatMessage;
 import com.athul.memegramspring.entity.Message;
@@ -47,6 +44,12 @@ public class SocketController {
         MessageDTO messageDTO = chatService.saveMessage(message);
         return messageDTO;
     }
+
+//    @MessageMapping("/video/{roomId}")
+//    @SendTo("/topic/video/{roomId}")
+//    public VideoCallDTO handleVideoCall(VideoCallDTO videoCallDTO){
+//        return videoCallDTO;
+//    }
 
 
     @PostMapping("/createChatRoom")
