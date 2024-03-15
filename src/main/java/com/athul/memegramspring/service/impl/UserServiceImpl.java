@@ -143,6 +143,19 @@ public class UserServiceImpl implements UserService {
         return userDTOs;
     }
 
+    public Map<Provider,Integer> getAllUsersForDashboard() {
+        List<User> users = userRepo.findAll();
+        List<UserDTO> userDTOs = users.stream().map(user -> userToDTO(user))
+                .collect(Collectors.toList());
+        Map<Provider,Integer> map = new HashMap<>();
+        Set<Provider> set = userDTOs.stream().map(e->e.getProvider()).collect(Collectors.toSet());
+        for(Provider e:set){
+            int count = (int)userDTOs.stream().filter(x->x.getProvider().equals(e)).count();
+            map.put(e,count);
+        }
+        return map;
+    }
+
 
     @Override
     public Page<UserDTO> getAllUsersForPageable(Pageable pageable) {

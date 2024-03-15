@@ -4,11 +4,13 @@ import com.athul.memegramspring.dto.FollowDTO;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.Follow;
 import com.athul.memegramspring.entity.User;
+import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.utils.UserBlockRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -28,6 +30,8 @@ public interface UserService {
 
     List<UserDTO> getAllUsers();
 
+    //for dashboard chart
+    Map<Provider,Integer> getAllUsersForDashboard();
     Page<UserDTO> getAllUsersForPageable(Pageable pageable);
 
     void deleteUser(Integer userId);

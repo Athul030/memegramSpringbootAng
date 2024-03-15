@@ -37,4 +37,6 @@ public class AdminServiceImpl implements AdminService {
         UserDTO userDTO = modelMapper.map(user1, UserDTO.class);
         return userDTO;
     }
+
+
 }
