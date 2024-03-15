@@ -177,7 +177,9 @@ public class  PostController {
         List<PostDTO> page1 = postService.getAllPost();
         String baseUrl = "http://localhost:8080/";
         page1.stream().forEach(postDTO -> {
-            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+//            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+            String imageUrl = baseUrl+"files/images/"+postDTO.getImageName();
+
             postDTO.setImageUrl(imageUrl);
         });
         return new ResponseEntity<>(page1,HttpStatus.OK);

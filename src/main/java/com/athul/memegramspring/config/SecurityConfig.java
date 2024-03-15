@@ -90,6 +90,7 @@ public class SecurityConfig  {
                         .requestMatchers("/src/main/resources/static/images/**").permitAll()
                         .requestMatchers("/static/images/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
+                        .requestMatchers("/target   /**").permitAll()
                         .requestMatchers("/socket1").permitAll() //for websocket
                         .requestMatchers("/socket").permitAll() //for websocket
                         .requestMatchers("/ws").permitAll() //for websocket
