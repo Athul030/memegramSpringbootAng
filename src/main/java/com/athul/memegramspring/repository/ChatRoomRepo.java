@@ -12,6 +12,7 @@ public interface ChatRoomRepo extends MongoRepository<ChatRoom,String> {
 
     ChatRoom findByParticipantUserIds(List<Integer> participantUserIds);
 
+
     @Query("{'participantUserIds': ?0, $or: [{'messages': null}, {'messages': {$exists: false}}, {'messages': {$size: 0}}, {'messages': {$not: {$size: 0}} }]}")
     ChatRoom findByParticipantUserIdsWithMessages(List<Integer> participantUserIds);
 

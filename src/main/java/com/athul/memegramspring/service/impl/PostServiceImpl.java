@@ -3,6 +3,7 @@ package com.athul.memegramspring.service.impl;
 import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.*;
 import com.athul.memegramspring.enums.PostType;
+import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.CategoryRepo;
 import com.athul.memegramspring.repository.LikeRepo;
@@ -17,10 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -174,6 +172,21 @@ public class PostServiceImpl implements PostService {
         String errorCode = "PostServiceImpl:numberOfPostByAUser()";
         User foundedUser=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","Id",userId,errorCode));
         return postRepo.countOfPostByUser(foundedUser.getUsername());
+    }
+
+    @Override
+    public Map<Date, Integer> getPostsDataAdminDashboard() {
+        List<Post> allPosts = postRepo.findAll();
+        List<PostDTO> postDtosAll = allPosts.stream().map((post -> postToDTO(post))).collect(Collectors.toList());
+        Map<Date,Long> postsByDate = postDtosAll.stream()
+                .collect(Collectors.groupingBy(
+                        PostDTO::getAddedDate,
+                        Collectors.counting()
+                ));
+        return postsByDate.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e->e.getValue().intValue()
+        ));
     }
 
     private UserDTO userToDTO(User user){

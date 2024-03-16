@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +45,9 @@ public class AdminController {
     }
 
     @GetMapping("/postsChartData")
-    public ResponseEntity<Map<Provider,Integer>> dataOfPostsForGraph(){
-        Map<Provider,Integer> map = userService.getAllUsersForDashboard();
-        return new ResponseEntity<>(map,HttpStatus.OK);
+    public ResponseEntity<Map<Date,Integer>> dataOfPostsForGraph(){
+        Map<Date,Integer> map1 = postService.getPostsDataAdminDashboard();
+        return new ResponseEntity<>(map1,HttpStatus.OK);
+
     }
 }

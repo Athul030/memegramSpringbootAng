@@ -2,10 +2,14 @@ package com.athul.memegramspring.service;
 
 import com.athul.memegramspring.dto.PostDTO;
 import com.athul.memegramspring.entity.Post;
+import com.athul.memegramspring.enums.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface PostService {
 
@@ -32,4 +36,6 @@ public interface PostService {
     int numberOfPostByAUser(String username);
 
     int numberOfPostByOtherUser(Integer userId);
+
+    Map<Date,Integer> getPostsDataAdminDashboard();
 }
