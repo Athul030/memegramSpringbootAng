@@ -56,4 +56,6 @@ public interface UserService {
     boolean toggleProfileType(boolean publicProfile,String username);
 
     boolean checkUserPresence(int userId);
+
+    UserDTO userToDTO(User user);
 }

@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private UserDTO userToDTO(User user){
+    public UserDTO userToDTO(User user){
         UserDTO userDTO=new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setFullName(user.getFullName());

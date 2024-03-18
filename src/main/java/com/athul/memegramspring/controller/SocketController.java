@@ -4,9 +4,11 @@ import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.ChatRoom;
 import com.athul.memegramspring.entity.ChatMessage;
 import com.athul.memegramspring.entity.Message;
+import com.athul.memegramspring.entity.User;
 import com.athul.memegramspring.service.ChatService;
 import com.athul.memegramspring.service.FileService;
 import com.athul.memegramspring.service.UserService;
+import com.athul.memegramspring.utils.OtherUserRequest;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,6 @@ public class SocketController {
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/{roomId}")
     public MessageDTO chat(@DestinationVariable String roomId, Message message){
-        System.out.println(message);
         MessageDTO messageDTO = chatService.saveMessage(message);
         return messageDTO;
     }
@@ -89,6 +90,11 @@ public class SocketController {
 
     //upload image
 
+    @PostMapping("/chat/getTheOtherUser")
+    public ResponseEntity<UserDTO> getTheOtherUser(@RequestBody OtherUserRequest otherUserRequest){
+        UserDTO user = chatService.getTheOtherUser(otherUserRequest.getRoomId(),otherUserRequest.getCurrentUserId());
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
 
 
 

@@ -2,6 +2,7 @@ package com.athul.memegramspring.service.impl;
 
 import com.athul.memegramspring.dto.ChatRoomDTO;
 import com.athul.memegramspring.dto.MessageDTO;
+import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.entity.ChatMessage;
 import com.athul.memegramspring.entity.ChatRoom;
 import com.athul.memegramspring.entity.Message;
@@ -12,6 +13,7 @@ import com.athul.memegramspring.repository.ChatRoomRepo;
 import com.athul.memegramspring.repository.MessageRepo;
 import com.athul.memegramspring.repository.UserRepo;
 import com.athul.memegramspring.service.ChatService;
+import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepo chatRoomRepo;
     private final MessageRepo messageRepo;
     private final UserRepo userRepo;
+    private final UserService userService;
 
     //create or retrieve if existing
     @Override
@@ -56,7 +59,6 @@ public class ChatServiceImpl implements ChatService {
         message.setTime(Instant.now());
         message.setIsRead(false);
         Message message1 =messageRepo.save(message);
-        System.out.println(message1);
         ModelMapper modelMapper = new ModelMapper();
         //changed below from message to message1 , check it if error comes
         MessageDTO messageDTO = modelMapper.map(message1, MessageDTO.class);
@@ -80,6 +82,16 @@ public class ChatServiceImpl implements ChatService {
         user.setUserPresence(status);
         userRepo.save(user);
         ;
+    }
+
+    @Override
+    public UserDTO getTheOtherUser(String roomId, int currentUserId) {
+        String errorCode = "ChatServiceImpl:getTheOtherUser()";
+        ChatRoom chatRoom = chatRoomRepo.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Chat Room","roomId",roomId,errorCode));
+        int otherUserId = chatRoom.getParticipantUserIds().stream().filter(e->!e.equals(currentUserId)).findFirst().orElseThrow(()->new ResourceNotFoundException("User","userId",currentUserId,errorCode));
+        User otherUser = userRepo.findById(otherUserId).orElseThrow(()->new ResourceNotFoundException("User","Id",otherUserId,errorCode));
+        UserDTO userDTO = userService.userToDTO(otherUser);
+        return userDTO;
     }
 
 

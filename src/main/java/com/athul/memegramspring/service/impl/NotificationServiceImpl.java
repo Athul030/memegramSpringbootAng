@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
         newNotification.setNotificationToEmail(toUser.getEmail());
         newNotification.setNotificationToFullName(toUser.getFullName());
 
-
+        newNotification.setChatRoomId(notificationsDTO.getChatRoomId());
         newNotification.setRead(notificationsDTO.isRead());
 
         Notifications savedNotification = notificationRepo.save(newNotification);
@@ -69,5 +71,48 @@ public class NotificationServiceImpl implements NotificationService {
         System.out.println("the dto notification sending from service delete after checking once"+notificationsDTO1);
 
         return notificationsDTO1;
+    }
+
+    @Override
+    public List<NotificationsDTO> getAllNotificationsOfAUser(int userId) {
+        String errorCode = "NotificationServiceImpl:getNotificationsAUser()";
+        List<Notifications> notificationsList = notificationRepo.getAllByNotificationTo(userId).orElseThrow(()-> new ResourceNotFoundException("MessageNotifications","userId",userId,errorCode));
+        ModelMapper mapper = new ModelMapper();
+        System.out.println("the list of notification in repo"+notificationsList);
+        List<NotificationsDTO> notificationsDTOList = notificationsList.stream().map(e->mapper.map(e, NotificationsDTO.class)).collect(Collectors.toList());
+        System.out.println("the list of notification sending from service delete after checking once"+notificationsDTOList);
+
+        return notificationsDTOList;
+    }
+
+    @Override
+    public List<NotificationsDTO> getNotificationsOfAUserMessagesOnly(int userId) {
+        String errorCode = "NotificationServiceImpl:getNotificationsAUserMessagesOnly()";
+        List<Notifications> notificationsList = notificationRepo.fetchMessageNotificationsOfAUser(userId, NotificationType.MESSAGE).orElseThrow(()-> new ResourceNotFoundException("MessageNotifications","userId",userId,errorCode));
+        ModelMapper mapper1 = new ModelMapper();
+        System.out.println("the list of notification in repo"+notificationsList);
+        List<NotificationsDTO> notificationsDTOList = notificationsList.stream().map(e->mapper1.map(e, NotificationsDTO.class)).collect(Collectors.toList());
+        System.out.println("the list of notification sending from service delete after checking once"+notificationsDTOList);
+
+        return notificationsDTOList;
+    }
+
+    @Override
+    public boolean notificationIsRead(int notId) {
+        String errorCode = "NotificationServiceImpl:notificationIsRead()";
+        Notifications notification = notificationRepo.findById(notId).orElseThrow(()-> new ResourceNotFoundException("MessageNotifications","NotificationId",notId,errorCode));
+        notification.setRead(true);
+        Notifications notifications = notificationRepo.save(notification);
+        if(notifications!=null) return true;
+        else return false;
+    }
+
+    @Override
+    public boolean deleteNotification(int notId) {
+        String errorCode = "NotificationServiceImpl:deleteNotification()";
+        Notifications notification = notificationRepo.findById(notId).orElseThrow(()-> new ResourceNotFoundException("MessageNotifications","NotificationId",notId,errorCode));
+        notificationRepo.delete(notification);
+        boolean result = notificationRepo.existsById(notId);
+        return !result;
     }
 }
