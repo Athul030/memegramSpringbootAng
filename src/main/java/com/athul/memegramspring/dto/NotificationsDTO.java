@@ -19,6 +19,7 @@ public class NotificationsDTO {
 
     private LocalDateTime notTimeStamp;
     private String chatRoomId;
+    private int videoCallRoomId;
     private NotificationType notificationType;
 
     private int notificationFrom;

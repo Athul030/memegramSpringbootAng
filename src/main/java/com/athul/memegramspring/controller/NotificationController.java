@@ -32,6 +32,17 @@ public class NotificationController {
 
     }
 
+    //video call
+    @MessageMapping("/videoCall")
+    @SendTo("/topic/videoCallTo")
+    public NotificationsDTO sendVideoCallNotification(NotificationsDTO notificationsDTO){
+        System.out.println("sendVideoCallNotf"+notificationsDTO.getVideoCallRoomId());
+        System.out.println("sendVideoCallNotf"+notificationsDTO.getNotificationType());
+        System.out.println("sendVideoCallNotf"+notificationsDTO.getNotificationFrom());
+        System.out.println("sendVideoCallNotf"+notificationsDTO.isRead());
+        return notificationsDTO;
+    }
+
     @GetMapping("/messageNotify/{userId}")
     public ResponseEntity<List<NotificationsDTO>>  getAllMessageNotifications(@PathVariable int userId){
         List<NotificationsDTO> messageNotificationsDTOList = notificationService.getNotificationsOfAUserMessagesOnly(userId);

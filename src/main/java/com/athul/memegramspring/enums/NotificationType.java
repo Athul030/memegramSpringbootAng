@@ -5,5 +5,6 @@ public enum NotificationType {
     MESSAGE,
     VIDEOCALL,
 
-    AUDIOCALL
+    AUDIOCALL,
+    DECLINE
 }
