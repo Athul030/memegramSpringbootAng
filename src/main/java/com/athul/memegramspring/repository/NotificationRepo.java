@@ -2,6 +2,7 @@ package com.athul.memegramspring.repository;
 
 import com.athul.memegramspring.entity.Notifications;
 import com.athul.memegramspring.enums.NotificationType;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,5 +21,6 @@ public interface NotificationRepo extends JpaRepository<Notifications, Integer> 
     //check later for working HQL
 //    List<Notifications> getAllByNotificationToAndNotificationTypeIsLikeMESSAGE(int userId, NotificationType notificationType);
 
+    Optional<List<Notifications>> getAllByChatRoomId(String chatRoomId);
 
 }

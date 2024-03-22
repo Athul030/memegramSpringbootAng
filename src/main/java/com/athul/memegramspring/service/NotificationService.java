@@ -16,4 +16,5 @@ public interface NotificationService {
 
     boolean deleteNotification(int notId);
 
+    boolean setChatNotificationStatus(String roomId);
 }

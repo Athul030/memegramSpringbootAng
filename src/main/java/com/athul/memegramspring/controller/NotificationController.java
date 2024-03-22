@@ -1,9 +1,12 @@
 package com.athul.memegramspring.controller;
 
 
+import com.athul.memegramspring.dto.LikeDTO;
 import com.athul.memegramspring.dto.NotificationsDTO;
 import com.athul.memegramspring.entity.Notifications;
 import com.athul.memegramspring.service.NotificationService;
+import com.athul.memegramspring.utils.LikeRequestBody;
+import com.athul.memegramspring.utils.LikeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -67,6 +71,16 @@ public class NotificationController {
         boolean result = notificationService.notificationIsRead(notId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
+
+    @PostMapping("/notification/chatNotificationStatus/{roomId}")
+    ResponseEntity<Boolean> setChatNotificationStatus(@PathVariable String roomId){
+        System.out.println("The room id is "+ roomId);
+        boolean result = notificationService.setChatNotificationStatus(roomId);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+
+    }
+
+
 
 
 }

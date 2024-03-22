@@ -65,10 +65,8 @@ public class NotificationServiceImpl implements NotificationService {
         newNotification.setRead(notificationsDTO.isRead());
 
         Notifications savedNotification = notificationRepo.save(newNotification);
-        System.out.println("the saved notification in repo"+savedNotification);
         ModelMapper mapper = new ModelMapper();
         NotificationsDTO notificationsDTO1 = mapper.map(savedNotification,NotificationsDTO.class);
-        System.out.println("the dto notification sending from service delete after checking once"+notificationsDTO1);
 
         return notificationsDTO1;
     }
@@ -114,5 +112,19 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepo.delete(notification);
         boolean result = notificationRepo.existsById(notId);
         return !result;
+    }
+
+    @Override
+    public boolean setChatNotificationStatus(String roomId) {
+        try {
+            String errorCode = "NotificationServiceImpl:setChatNotificationStatus()";
+            List<Notifications> notificationsList = notificationRepo.getAllByChatRoomId(roomId).orElseThrow(() -> new ResourceNotFoundException("MessageNotifications", "ChatRoomId", roomId, errorCode));
+            notificationsList.stream().forEach(e -> e.setRead(true));
+            notificationRepo.saveAll(notificationsList);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
     }
 }
