@@ -135,15 +135,7 @@ public class AuthController {
         }
     }
 
-//    private void authenticate(String username,String password) throws Exception {
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
-//
-//        try{
-//            authenticationManager.authenticate(authenticationToken);
-//        }catch (BadCredentialsException e){
-//            throw new ApiException("Invalid username or password");
-//        }
-//    }
+
 
     @PostMapping("/logout")
     @ApiResponses({
