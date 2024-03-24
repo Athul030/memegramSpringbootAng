@@ -65,13 +65,13 @@ public class User implements UserDetails {
         return authorities;
     }
 
-    @OneToMany(mappedBy = "follower")
+    @OneToMany(mappedBy = "follower", fetch = FetchType.EAGER)
     private List<Follow> followers;
 
-    @OneToMany(mappedBy = "following")
+    @OneToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private List<Follow> following;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_blocks",joinColumns = @JoinColumn(name = "blockingUserId"),inverseJoinColumns = @JoinColumn(name = "blockedUserId"))
     private Set<User> blockedUsers;
 
