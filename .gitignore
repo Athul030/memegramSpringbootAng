@@ -1,6 +1,6 @@
 HELP.md
-#target/
-target/classes/env.properties
+target/
+#target/classes/env.properties
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/\
