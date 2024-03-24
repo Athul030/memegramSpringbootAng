@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.athul.memegramspring.MemegramSpringApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.27 s -- in com.athul.memegramspring.MemegramSpringApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.49 s -- in com.athul.memegramspring.MemegramSpringApplicationTests
