@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService {
         String fileName=randomID.concat(name.substring(name.lastIndexOf(".")));
         //my path
         String filePath = path + File.separator+fileName;
-
+        System.out.println("The file path in FileServiceImpl is " + filePath);
 //        File f=new File(path);
 //        if(!f.exists()){
 //            f.mkdir();

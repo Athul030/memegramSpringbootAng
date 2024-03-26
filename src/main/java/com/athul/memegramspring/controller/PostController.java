@@ -87,26 +87,14 @@ public class  PostController {
         Integer parsedCategoryId = Integer.parseInt(categoryId);
         Integer userId = userService.getUserByUsername(userDetails.getUsername()).getId();
         //image
+        System.out.println("The path of the image saving is : "+path);
         String fileName = fileService.uploadImage(path, file);
         postDTO.setImageName(fileName);
         PostDTO createdPost = postService.createPost(postDTO,userId,parsedCategoryId);
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
 
-//    //get by user
-//    @GetMapping("/user/{userId}/posts")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Ok"),
-//            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-//            @ApiResponse(responseCode = "404",description = "User not found"),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-//    })
-//    public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Integer userId){
-//
-//        List<PostDTO> postsByUser = postService.getPostsByUser(userId);
-//        return new ResponseEntity<List<PostDTO>>(postsByUser,HttpStatus.OK);
-//
-//    }
+
     //get posts by user from TOken
     @GetMapping("/user/posts")
     @ApiResponses(value = {
