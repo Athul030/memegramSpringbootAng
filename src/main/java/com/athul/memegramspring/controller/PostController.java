@@ -51,6 +51,8 @@ public class  PostController {
 
     @Value("${baseUrl}")
     private String url;
+    @Value("${baseUrlForNonPageablePosts}")
+    private String urlForPosts;
 
     //create a post
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
@@ -178,10 +180,10 @@ public class  PostController {
     public ResponseEntity<List<PostDTO>> getAllPost(){
 
         List<PostDTO> page1 = postService.getAllPost();
-        String baseUrl = url;
+        String baseUrl = urlForPosts;
         page1.stream().forEach(postDTO -> {
 //            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
-            String imageUrl = baseUrl+"files/images/"+postDTO.getImageName();
+            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
 
             postDTO.setImageUrl(imageUrl);
         });
