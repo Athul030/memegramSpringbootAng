@@ -49,6 +49,9 @@ public class  PostController {
     @Value("${project.imageTarget")
     private String altPath;
 
+    @Value("${baseUrl}")
+    private String url;
+
     //create a post
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     @ApiResponses(value = {
@@ -157,7 +160,7 @@ public class  PostController {
     public ResponseEntity<Page<PostDTO>> getAllPostWIthPageable( Pageable pageable){
 
         Page<PostDTO> page = postService.getAllPost(pageable);
-        String baseUrl = "http://localhost:8080/";
+        String baseUrl = url;
         page.getContent().forEach(postDTO -> {
             String imageUrl = baseUrl+"images/"+postDTO.getImageName();
             postDTO.setImageUrl(imageUrl);
@@ -175,7 +178,7 @@ public class  PostController {
     public ResponseEntity<List<PostDTO>> getAllPost(){
 
         List<PostDTO> page1 = postService.getAllPost();
-        String baseUrl = "http://localhost:8080/";
+        String baseUrl = url;
         page1.stream().forEach(postDTO -> {
 //            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
             String imageUrl = baseUrl+"files/images/"+postDTO.getImageName();

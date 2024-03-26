@@ -13,6 +13,7 @@ import com.athul.memegramspring.service.PostService;
 import com.athul.memegramspring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,9 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepo categoryRepo;
     private final ModelMapper modelMapper;
     private final LikeRepo likeRepo;
+
+    @Value("${baseUrl}")
+    private String url;
 
 
 
@@ -151,7 +155,7 @@ public class PostServiceImpl implements PostService {
 
         System.out.println(postsDtosUser);
 
-     String baseUrl = "http://localhost:8080/";
+     String baseUrl = url;
         postsDtosUser.stream().forEach(postDTO -> {
 
             String imageUrl = baseUrl+"images/"+postDTO.getImageName();
