@@ -11,6 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class SignalingConfiguration implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new SignalingHandler(),"/socket1").setAllowedOrigins("http://localhost:4200");
+        registry.addHandler(new SignalingHandler(),"/socket1")
+                .setAllowedOrigins("http://localhost:4200","https://trendythreads.cloud","http://trendythreads.cloud");
     }
 }

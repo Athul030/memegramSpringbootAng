@@ -7,6 +7,7 @@ import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.*;
 import com.athul.memegramspring.service.UserService;
 import com.athul.memegramspring.utils.UserBlockRequest;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,6 +31,11 @@ public class UserServiceImpl implements UserService {
     private final FollowRepo followRepo;
     private final ReportsRepo reportsRepo;
     private final PostRepo postRepo;
+    private Role userRole;
+    @PostConstruct
+    public void init(){
+        userRole = roleRepo.findByName("ROLE_USER");
+    }
 
 
     @Override
@@ -43,8 +49,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setProvider(Provider.LOCAL);
         //2 is ROLE_USER
-        Role role = roleRepo.findById(2).get();
-        user.getRoles().add(role);
+//        Role role = roleRepo.findById(2).get();
+//        Role role = roleRepo.findByName("ROLE_USER");
+        user.getRoles().add(userRole);
         user.setBlocked(false);
         user.setProfilePicUrl("https://memegramawsbucket1.s3.us-east-2.amazonaws.com//myfolder/images/defaultProfilePicture.jpeg");
         user.setPublicProfile(true);
