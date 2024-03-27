@@ -54,6 +54,11 @@ public class PostServiceImpl implements PostService {
         }else{
             post.setImageName(postDTO.getImageName());
         }
+        if(postDTO.getImageUrl()==null) {
+            post.setImageName("defaultUrl.png");
+        }else{
+            post.setImageUrl(postDTO.getImageUrl());
+        }
         post.setAddedDate(new Date());
         post.setUser(user);
         post.setCategory(category);
@@ -153,14 +158,12 @@ public class PostServiceImpl implements PostService {
             return postDTO;
         }).collect(Collectors.toList());
 
-        System.out.println(postsDtosUser);
-
-     String baseUrl = url;
-        postsDtosUser.stream().forEach(postDTO -> {
-
-            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
-            postDTO.setImageUrl(imageUrl);
-        });
+//        String baseUrl = url;
+//        postsDtosUser.stream().forEach(postDTO -> {
+//
+//            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+//            postDTO.setImageUrl(imageUrl);
+//        });
 
         return postsDtosUser;
 

@@ -5,6 +5,7 @@ import com.athul.memegramspring.entity.Post;
 import com.athul.memegramspring.exceptions.ApiResponseCustom;
 import com.athul.memegramspring.service.FileService;
 import com.athul.memegramspring.service.PostService;
+import com.athul.memegramspring.service.S3FileUploadService;
 import com.athul.memegramspring.service.UserService;
 import com.athul.memegramspring.utils.FollowerFollowingDetails;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,6 +43,7 @@ public class  PostController {
 
     private final UserService userService;
 
+    private final S3FileUploadService s3FileUploadService;
 
     @Value("${project.image}")
     private String path;
@@ -66,9 +68,13 @@ public class  PostController {
                                                 @PathVariable Integer userId,
                                                 @PathVariable Integer categoryId,
                                                 @RequestPart("file")MultipartFile file) throws IOException {
-        //image
-        String fileName = fileService.uploadImage(path, file);
-        postDTO.setImageName(fileName);
+//        //image using local storage
+//        String fileName = fileService.uploadImage(path, file);
+//        postDTO.setImageName(fileName);
+
+        //image using cloud storage
+        String fileName = s3FileUploadService.uploadFileToS3(file).get("fileUrl");
+        postDTO.setImageUrl(fileName);
         PostDTO createdPost = postService.createPost(postDTO,userId,categoryId);
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
@@ -86,10 +92,14 @@ public class  PostController {
                                               @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         Integer parsedCategoryId = Integer.parseInt(categoryId);
         Integer userId = userService.getUserByUsername(userDetails.getUsername()).getId();
-        //image
-        System.out.println("The path of the image saving is : "+path);
-        String fileName = fileService.uploadImage(path, file);
-        postDTO.setImageName(fileName);
+//        //image using local storage
+//        String fileName = fileService.uploadImage(path, file);
+//        postDTO.setImageName(fileName);
+
+        //image using cloud storage
+        String fileName = s3FileUploadService.uploadFileToS3(file).get("fileUrl");
+        postDTO.setImageUrl(fileName);
+
         PostDTO createdPost = postService.createPost(postDTO,userId,parsedCategoryId);
         return new ResponseEntity<PostDTO>(createdPost, HttpStatus.CREATED);
     }
@@ -150,11 +160,11 @@ public class  PostController {
     public ResponseEntity<Page<PostDTO>> getAllPostWIthPageable( Pageable pageable){
 
         Page<PostDTO> page = postService.getAllPost(pageable);
-        String baseUrl = url;
-        page.getContent().forEach(postDTO -> {
-            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
-            postDTO.setImageUrl(imageUrl);
-        });
+//        String baseUrl = url;
+//        page.getContent().forEach(postDTO -> {
+//            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
+//            postDTO.setImageUrl(imageUrl);
+//        });
         return new ResponseEntity<>(page,HttpStatus.OK);
     }
 
@@ -168,13 +178,12 @@ public class  PostController {
     public ResponseEntity<List<PostDTO>> getAllPost(){
 
         List<PostDTO> page1 = postService.getAllPost();
-        String baseUrl = urlForPosts;
-        page1.stream().forEach(postDTO -> {
+//        String baseUrl = urlForPosts;
+//        page1.stream().forEach(postDTO -> {
 //            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
-            String imageUrl = baseUrl+"images/"+postDTO.getImageName();
-
-            postDTO.setImageUrl(imageUrl);
-        });
+//
+//            postDTO.setImageUrl(imageUrl);
+//        });
         return new ResponseEntity<>(page1,HttpStatus.OK);
     }
 
