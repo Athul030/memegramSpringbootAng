@@ -94,6 +94,7 @@ public class SecurityConfig  {
                         .requestMatchers("/socket1").permitAll() //for websocket
                         .requestMatchers("/socket").permitAll() //for websocket
                         .requestMatchers("/ws").permitAll() //for websocket
+                        .requestMatchers("/wss").permitAll() //for websocket
                         .requestMatchers("/app/**").permitAll()
                         .requestMatchers("/oauth/**","/login/oauth2/code/google").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
