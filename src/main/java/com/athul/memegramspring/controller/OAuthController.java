@@ -48,6 +48,8 @@ public class OAuthController {
     private final UserService userService;
     private final JwtHelper jwtHelper;
 
+    @Value("${oAuth_CallBackUrl}")
+    private String callBackUrl;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -110,7 +112,7 @@ public class OAuthController {
 
             ObjectMapper mapper = new ObjectMapper();
 
-            String callbackUrl = "http://localhost:4200/callback?response=" + encodeURIComponent(mapper.writeValueAsString(response));
+            String callbackUrl = callBackUrl+"/callback?response=" + encodeURIComponent(mapper.writeValueAsString(response));
             httpServletResponse.sendRedirect(callbackUrl);
 
             return new ResponseEntity<>(response,HttpStatus.OK);
