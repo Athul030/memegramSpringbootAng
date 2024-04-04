@@ -48,5 +48,7 @@ public class Post {
     @Column(name = "reported_count", nullable = false, columnDefinition = "integer default 0")
     private int reportedCount;
 
+    private boolean block;
+
 
 }

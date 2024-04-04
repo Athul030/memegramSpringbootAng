@@ -331,7 +331,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean reportUser(int reportingUserId, int reportedUserId, String reason,int postId) {
+    public boolean
+
+    reportUser(int reportingUserId, int reportedUserId, String reason,int postId) {
         String errorCode = "UserServiceImpl:reportUser()";
         User reportingUser = userRepo.findById(reportingUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportingUserId,errorCode));
         User reportedUser = userRepo.findById(reportedUserId).orElseThrow(()-> new ResourceNotFoundException("User", "Id", reportedUserId,errorCode));

@@ -15,7 +15,7 @@ public interface PostRepo extends JpaRepository<Post,Integer> {
     List<Post> findByUser(User user);
     List<Post> findByCategory(Category category);
 
-    @Query("SELECT COUNT(*) FROM Post p JOIN User u ON p.user.id=u.id WHERE p.user.email=:username ")
+    @Query("SELECT COUNT(*) FROM Post p JOIN User u ON p.user.id=u.id WHERE p.user.email=:username AND p.block=false ")
     int countOfPostByUser(String username);
 
 }

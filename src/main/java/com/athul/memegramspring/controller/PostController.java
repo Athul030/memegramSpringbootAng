@@ -201,19 +201,21 @@ public class  PostController {
     }
 
     //delete post
-    @DeleteMapping("/posts/{postId}")
+    @DeleteMapping("/postsDelete/{postId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404",description = "Post not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ApiResponseCustom deletePost(@PathVariable  Integer postId){
+    public ApiResponseCustom deletePost(@PathVariable  int postId, Authentication authentication){
 
-        postService.deletePost(postId);
+        postService.deletePost(postId,authentication.getName());
         return new ApiResponseCustom("Post is successfully deleted",HttpStatus.OK);
 
     }
+
+
 
     @PutMapping("/posts/{postId}")
     @ApiResponses(value = {
@@ -272,4 +274,6 @@ public class  PostController {
         int count = postService.numberOfPostByOtherUser(userId);
         return new ResponseEntity<>(count,HttpStatus.OK);
     }
+
+
 }

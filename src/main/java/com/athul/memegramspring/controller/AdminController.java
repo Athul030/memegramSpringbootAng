@@ -2,6 +2,7 @@ package com.athul.memegramspring.controller;
 
 
 
+import com.athul.memegramspring.dto.PostDTO;
 import com.athul.memegramspring.dto.UserDTO;
 import com.athul.memegramspring.enums.Provider;
 import com.athul.memegramspring.service.AdminService;
@@ -49,5 +50,17 @@ public class AdminController {
         Map<Date,Integer> map1 = postService.getPostsDataAdminDashboard();
         return new ResponseEntity<>(map1,HttpStatus.OK);
 
+    }
+
+    @PatchMapping("/blockPost/{postId}")
+    public ResponseEntity<PostDTO> blockPostByAdmin(@PathVariable Integer postId){
+        PostDTO postDTO = adminService.blockPost(postId);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping("/unBlockPost/{postId}")
+    public ResponseEntity<PostDTO> unBlockPostByAdmin(@PathVariable Integer postId){
+        PostDTO postDTO = adminService.unBlockPost(postId);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 }

@@ -54,4 +54,7 @@ public class PostDTO {
 
     private int reportedCount;
 
+    private boolean block;
+
+
 }

@@ -19,7 +19,7 @@ public interface PostService {
     PostDTO updatePost(PostDTO postDTO,Integer postId);
 
     //delete
-    void deletePost(Integer postId);
+    void deletePost(Integer postId, String loggedInUserName);
     List<PostDTO> getAllPost();
     //get all posts
     Page<PostDTO> getAllPost(Pageable pageable);

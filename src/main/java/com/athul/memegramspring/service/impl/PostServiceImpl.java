@@ -4,6 +4,7 @@ import com.athul.memegramspring.dto.*;
 import com.athul.memegramspring.entity.*;
 import com.athul.memegramspring.enums.PostType;
 import com.athul.memegramspring.enums.Provider;
+import com.athul.memegramspring.exceptions.PermissionDeniedException;
 import com.athul.memegramspring.exceptions.ResourceNotFoundException;
 import com.athul.memegramspring.repository.CategoryRepo;
 import com.athul.memegramspring.repository.LikeRepo;
@@ -62,6 +63,7 @@ public class PostServiceImpl implements PostService {
         post.setAddedDate(new Date());
         post.setUser(user);
         post.setCategory(category);
+        post.setBlock(false);
         Post savedPost = postRepo.save(post);
 
         PostDTO returnedPostDto = new PostDTO();
@@ -103,10 +105,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(Integer postId) {
+    public void deletePost(Integer postId, String loggedInUserName) {
         String errorCode = "PostServiceImpl:deletePost()";
         Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId,errorCode));
-        postRepo.delete(post);
+
+        if(!post.getUser().getEmail().equals(loggedInUserName)){
+            throw new PermissionDeniedException("User doesn't have permission to delete this comment");
+        }else {
+            postRepo.delete(post);
+        }
 
     }
 
@@ -121,7 +128,8 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> getAllPost() {
 
         List<Post> allPosts = postRepo.findAll();
-        List<PostDTO> postDtosAll = allPosts.stream().map((post -> postToDTO(post))).collect(Collectors.toList());
+        List<PostDTO> postDtosAll = allPosts.stream().map((post -> postToDTO(post))).collect(Collectors.toList())
+                .stream().filter(post->post.isBlock()==false).collect(Collectors.toList());
         return postDtosAll;
     }
 
@@ -146,7 +154,8 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> getPostsByUser(Integer userId) {
         String errorCode = "PostServiceImpl:getPostsByUser()";
         User user= userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","User id",userId,errorCode));
-        List<Post> posts = postRepo.findByUser(user);
+        //changed
+        List<Post> posts = postRepo.findByUser(user).stream().filter(post->post.isBlock()==false).collect(Collectors.toList());
         ModelMapper modelMapper2 = new ModelMapper();
 
         List<PostDTO> postsDtosUser = posts.stream().map(post -> {
@@ -168,6 +177,8 @@ public class PostServiceImpl implements PostService {
         return postsDtosUser;
 
     }
+
+
 
     @Override
     public int numberOfPostByAUser(String username) {
@@ -230,6 +241,7 @@ public class PostServiceImpl implements PostService {
         postDTO.setAddedDate(post.getAddedDate());
         postDTO.setUser(userToDTO(post.getUser()));
         postDTO.setCategory(catToDTO(post.getCategory()));
+        postDTO.setBlock(post.isBlock());
         ModelMapper modelMapper1 = new ModelMapper();
         List<LikeDTO> likeDTOS = post.getLikes().stream().map(x->{
 
