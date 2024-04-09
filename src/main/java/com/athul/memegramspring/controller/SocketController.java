@@ -41,6 +41,7 @@ public class SocketController {
 
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/{roomId}")
+
     public MessageDTO chat(@DestinationVariable String roomId, Message message){
         MessageDTO messageDTO = chatService.saveMessage(message);
         return messageDTO;

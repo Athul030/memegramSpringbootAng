@@ -30,10 +30,10 @@ public class Post {
 
     private Date addedDate;
 
-    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Like> likes;
 
-    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
     @ManyToOne
